@@ -1,0 +1,1338 @@
+[
+    {
+        "id": "57aed979d45b94dc",
+        "type": "tab",
+        "label": "EOS",
+        "disabled": false,
+        "info": "",
+        "env": [
+            {
+                "name": "EOS_URL",
+                "value": "http://<<<<ip-replace>>>>:8503",
+                "type": "str"
+            }
+        ]
+    },
+    {
+        "id": "c6d7c27cb63b9301",
+        "type": "influxdb",
+        "hostname": "<<<<ip-replace>>>>",
+        "port": "8086",
+        "protocol": "http",
+        "database": "unknown",
+        "name": "InfluxDB",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "http://<<<<ip-replace>>>>:8086",
+        "timeout": "",
+        "rejectUnauthorized": false
+    },
+    {
+        "id": "0908e1e8147a336e",
+        "type": "http request",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "{{{eos_url}}}/optimize",
+        "tls": "",
+        "persist": true,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 2790,
+        "y": 520,
+        "wires": [
+            [
+                "a53e7fcf06c23df8",
+                "d633320e320bf056"
+            ]
+        ]
+    },
+    {
+        "id": "e4b7fa2f4b0be015",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "function rule them all",
+        "func": "context.data = context.data || {};\nswitch (msg.topic) {\n    case \"soc\": \n        context.data.soc = msg.payload;\n        return null;\n    case \"strompreis\":\n        //context.data.strompreis = msg.payload.map(p => p / 100); // Convert to euro/Wh\n        context.data.strompreis = msg.payload;\n        return null;        \n    case \"gesamtlast\":\n        context.data.gesamtlast = msg.payload.map(p => p * 1);; // Example multiplier for conversion\n        return null;               \n    case \"pv_forecast\":\n        context.data.temperature_forecast = msg.payload.map(t => t + 18); // Example adjustment for temperatures\n        context.data.pv_forecast = msg.payload.map(v => v * 1000); // Convert to Wh\n        return null;                \n    case \"soc_tesla\":\n        context.data.soc_tesla = msg.payload;\n        return null;\n    case \"akku_preis\":\n        context.data.akku_preis = parseFloat(msg.payload);\n        return null;          \n    case \"eauto_soc_ui\":\n        context.data.eauto_soc_ui = parseFloat(msg.payload);\n        return null;        \n    case \"pvpowernow\":\n        context.data.pvpowernow = parseFloat(msg.payload);\n        return null;                \n    case \"solution\":\n        context.data.start_solution = msg.payload.start_solution;\n        return null;           \n    case \"spuel\":\n        context.data.spuel = msg.payload;\n        return null;     \n    case \"spuel_onoff\":\n        context.data.spuel_onoff = msg.payload;\n        return null;                        \n    case \"go shorty\":\n        break;   \n    default:\n        return null; \n}\n\n// Defaults for missing data\nif (context.data.strompreis == null){\n    console.log(\"Missing price data\");\n    return null;\n}\n\nif (context.data.akku_preis == null)\n    context.data.akku_preis = 7.0;\n\nif (context.data.eauto_soc_ui == null)\n    context.data.eauto_soc_ui = 20.0;\n\nif (context.data.pvpowernow == null)\n    context.data.pvpowernow = null;\n\nif (context.data.start_solution == null)\n    context.data.start_solution = null; // Example default solution\n\nif (context.data.soc == null || context.data.soc_tesla == null || context.data.eauto_soc_ui == null) {\n    return msg;\n}\n\nmsg.payload = {\n    ems: {\n        preis_euro_pro_wh_akku: context.data.akku_preis * (0.01 / 100.0),\n        einspeiseverguetung_euro_pro_wh: 7 / (1000.0 * 100.0),\n        gesamtlast: context.data.gesamtlast,\n        pv_prognose_wh: context.data.pv_forecast,\n        strompreis_euro_pro_wh: context.data.strompreis\n    },\n    pv_akku: {\n        capacity_wh: 12000,\n        charging_efficiency: 0.92,\n        discharging_efficiency: 0.92,\n        max_charge_power_w: 5700,\n        initial_soc_percentage: context.data.soc,\n        min_soc_percentage: 5,\n        max_soc_percentage: 100\n    },\n    inverter: {\n        max_power_wh: 15500\n    },\n    eauto: {\n        capacity_wh: 64000,\n        charging_efficiency: 0.88,\n        discharging_efficiency: 0.88,\n        max_charge_power_w: 11040,\n        initial_soc_percentage: context.data.soc_tesla,\n        min_soc_percentage: context.data.eauto_soc_ui,\n        max_soc_percentage: 100\n    },\n    temperature_forecast: context.data.temperature_forecast,\n    start_solution: context.data.start_solution\n};\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2400,
+        "y": 520,
+        "wires": [
+            [
+                "fa34e763a4bccacc",
+                "60698e16ebcbb221"
+            ]
+        ]
+    },
+    {
+        "id": "fa34e763a4bccacc",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "debug-PayloadForOptimization",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2430,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "a53e7fcf06c23df8",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "debug-ResultOfOptimization",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3020,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "98d72ca32188641c",
+        "type": "inject",
+        "z": "57aed979d45b94dc",
+        "name": "Trigger all 30 Minutes",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "3600",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "5",
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 130,
+        "y": 560,
+        "wires": [
+            [
+                "1fe8d1f9e2621bee",
+                "9e29056dea8f746c"
+            ]
+        ]
+    },
+    {
+        "id": "c74ea27f5b853cd7",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "pv forecast",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1370,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "7c16e58d57d088e2",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "filterAndFormatPVForecastFromMidnight",
+        "func": "// Hole das aktuelle Datum\nlet now = new Date();\n\n// Erstelle ein neues Array, um die gefilterten Werte zu speichern\nlet filteredData = [];\n\n// Durchlaufe das ursprüngliche Array und filtere nur Werte ab Mitternacht\nmsg.payload.forEach(item => {\n    // Konvertiere den Zeitstempel in ein Datum\n    let itemDate = new Date(item._time);\n\n    // Prüfe, ob der Zeitstempel ab Mitternacht heute liegt\n    //if (itemDate >= new Date(now.getFullYear(), now.getMonth(), now.getDate())) {\n        filteredData.push(item);\n    //}\n});\n\n// Schneide die Werte auf maximal 48 Einträge\nlet limitedData = filteredData.slice(0, 48);\n\n// Extrahiere die \"last\"-Werte, runde auf 2 Nachkommastellen und speichere sie in einem neuen Array\nlet pv_forecast = limitedData.map(item => item._value !== null ? parseFloat(item._value.toFixed(2)) : 0);\n\n// Setze das neue Array als Payload im gewünschten Format\nmsg.payload = pv_forecast;\nmsg.topic = \"pv_forecast\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1460,
+        "y": 740,
+        "wires": [
+            [
+                "c74ea27f5b853cd7",
+                "e4b7fa2f4b0be015"
+            ]
+        ]
+    },
+    {
+        "id": "4b3194b8944cbea2",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "pv power now",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1380,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "4c7d16251cb392f9",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "formatpvPowerNow",
+        "func": "let pvData = msg.payload; // Der aktuelle Payload, wie z.B. [{\"time\":\"1970-01-01T00:00:00.000Z\",\"total_pv\":2.85}]\n\n// Extrahiere den Wert von \"total_pv\" aus dem Payload\nlet totalPv = pvData[0]._value; // Annahme: Das erste Element des Arrays enthält den gewünschten Wert\n\n// Multipliziere den Wert mit 1000 und schneide die Nachkommastellen ab\nlet pvPowerNow = Math.floor(totalPv * 1000);\n\n// Setze den msg.payload so, dass er nur den Wert \"pvpowernow\" enthält\nmsg.payload = pvPowerNow;\nmsg.topic = \"total_pv\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1390,
+        "y": 840,
+        "wires": [
+            [
+                "4b3194b8944cbea2",
+                "e4b7fa2f4b0be015"
+            ]
+        ]
+    },
+    {
+        "id": "1d23bac51185cf23",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "home battery soc from db",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1410,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "e23883ae77b9da9d",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "formatSocNow",
+        "func": "let pvData = msg.payload; // Der aktuelle Payload, z.B. [{\"time\":\"2024-09-05T15:28:29.000Z\",\"last\":39}]\n\n// Extrahiere den Wert von \"last\" aus dem Payload\nlet lastValue = pvData[0]._value; // Annahme: Das erste Element des Arrays enthält den gewünschten Wert\n\n// Setze den msg.payload so, dass er nur den Wert \"soc\" enthält\nmsg.payload = lastValue;\nmsg.topic = \"soc\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1380,
+        "y": 640,
+        "wires": [
+            [
+                "1d23bac51185cf23",
+                "e4b7fa2f4b0be015"
+            ]
+        ]
+    },
+    {
+        "id": "6fdd45cbe4435b07",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "filterAndFormatStompreisFromMidnight",
+        "func": "// Get the current date\nlet now = new Date();\n\nif (msg.topic == \"pricefromdb\"){\n    let tmp = msg.payload[0];\n    msg.payload[0] = msg.payload[1];\n    msg.payload[1] = tmp;\n}\n\n// Limit the filtered data to a maximum of 48 entries\n//let limitedData = filteredData.slice(0, 48);\n\n// Extract \"_value\", round it to 2 decimal places, and adjust its scale\nlet strompreis = msg.payload[0].map(item => item._value !== null ? parseFloat((item._value / 1000).toFixed(8)) : 0);\nstrompreis = strompreis.slice(0, 48);\n\n// Step 3: Use data from the second array to fill in missing entries up to 48 hours\nlet secondaryData = msg.payload[1];\nlet generatedValues = [];\n\nfor (let i = strompreis.length; i < 48; i++) {\n    strompreis.push(secondaryData[i]);\n}\n\n// Set the payload with the final data\nmsg.payload = strompreis;\nmsg.topic = \"strompreis\";\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1960,
+        "y": 1020,
+        "wires": [
+            [
+                "824bab03be4c643f",
+                "e4b7fa2f4b0be015",
+                "d633320e320bf056"
+            ]
+        ]
+    },
+    {
+        "id": "824bab03be4c643f",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "price  - merged from db and eos",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1930,
+        "y": 1060,
+        "wires": []
+    },
+    {
+        "id": "4c89689f328215f9",
+        "type": "delay",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 800,
+        "y": 1040,
+        "wires": [
+            [
+                "48ea45ed2145428a",
+                "bb23d5b51d906279"
+            ]
+        ]
+    },
+    {
+        "id": "982909bae686458e",
+        "type": "delay",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 600,
+        "y": 740,
+        "wires": [
+            [
+                "b02a6d33f9efea02",
+                "a433938a8b56d5ba",
+                "4c89689f328215f9",
+                "3047bbcf8e62a313"
+            ]
+        ]
+    },
+    {
+        "id": "2f7fe4242b61445c",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "car soc db - formatted",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2160,
+        "y": 1320,
+        "wires": []
+    },
+    {
+        "id": "cfdc12658a116550",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "formatSocCarNow",
+        "func": "// Der aktuelle Payload, z.B. [{\"time\":\"2024-09-05T15:28:29.000Z\",\"last\":39}]\nlet pvData = msg.payload;\n\ntry {\n    // Extrahiere den Wert von \"last\" aus dem Payload\n    let lastValue = pvData[0]._value; // Annahme: Das erste Element des Arrays enthält den gewünschten Wert\n\n    // Setze den msg.payload so, dass er nur den Wert \"soc_tesla\" enthält\n    msg.payload = lastValue;\n} catch (error) {\n    // Wenn ein Fehler auftritt, setze den Wert auf 30\n    msg.payload = 30;\n    node.error(\"Error extracting value. Set it to 30 as default: \" + error.message, msg);\n}\n\nmsg.topic = \"soc_tesla\";\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2150,
+        "y": 1280,
+        "wires": [
+            [
+                "2f7fe4242b61445c",
+                "e4b7fa2f4b0be015"
+            ]
+        ]
+    },
+    {
+        "id": "05e62b5400189371",
+        "type": "comment",
+        "z": "57aed979d45b94dc",
+        "name": "HARDCODED - Read car SOC - HARDCODED",
+        "info": "",
+        "x": 1460,
+        "y": 1380,
+        "wires": [],
+        "icon": "node-red/alert.svg"
+    },
+    {
+        "id": "933cd0a1bd26c138",
+        "type": "inject",
+        "z": "57aed979d45b94dc",
+        "name": "Start Optimization",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "go shorty",
+        "x": 116,
+        "y": 459,
+        "wires": [
+            [
+                "7f7fb0958c43e80c"
+            ]
+        ]
+    },
+    {
+        "id": "adbf109d81999ecc",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "car soc - target",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1380,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "a8351ac200a9deaa",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "power from db",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1040,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "e71174e359ca935d",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "price - joined db & eos ",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1520,
+        "y": 1060,
+        "wires": []
+    },
+    {
+        "id": "becd4295fd79ab87",
+        "type": "join",
+        "z": "57aed979d45b94dc",
+        "name": "Join price from database with price forecast",
+        "mode": "custom",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "num",
+        "reduceFixup": "",
+        "x": 1570,
+        "y": 1020,
+        "wires": [
+            [
+                "e71174e359ca935d",
+                "6fdd45cbe4435b07"
+            ]
+        ]
+    },
+    {
+        "id": "d633320e320bf056",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "Prepare Payload for InfluxDBv2",
+        "func": "let payload = [];\nlet tempArray = [];\n\n// Get the current time and round down to the nearest hour\nlet baseTime = new Date();\nbaseTime.setMinutes(0, 0, 0); // Set minutes, seconds, and milliseconds to 0\nlet label = \"\";\nif (msg.topic == \"go shorty\") {\n    label = \"ac_charge\";\n    tempArray = msg.payload.ac_charge;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                relative: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"discharge_allowed\";\n    tempArray = msg.payload.discharge_allowed;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                discharge_allowed: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"eautocharge_hours_float\";\n    tempArray = msg.payload.eautocharge_hours_float;\n\n    // If tempArray is null, initialize it as an array of 48 zeros\n    if (tempArray === null) {\n        tempArray = Array(48).fill(0);\n    }\n\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(i);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                eautocharge_hours_float: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"akku_soc_pro_stunde\";\n    tempArray = msg.payload.result.akku_soc_pro_stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                akku_soc_pro_stunde: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"EAuto_SoC_pro_Stunde\";\n    tempArray = msg.payload.result.EAuto_SoC_pro_Stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                EAuto_SoC_pro_Stunde: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"Last_Wh_pro_Stunde_optimized\";\n    tempArray = msg.payload.result.Last_Wh_pro_Stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                Last_Wh_pro_Stunde_optimized: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"gesamtlast\") {\n    label = \"Last_Wh_pro_Stunde_prognose\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                Last_Wh_pro_Stunde_prognose: tempArray[i] * 1000\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"strompreis\") {\n    label = \"strompreis_prognose\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        //timestamp = timestamp.setHours((i));\n        //timestamp = new Date(timestamp);\n        timestamp.setHours(baseTime.getHours() + (i));\n        payload.push({\n            measurement: label,\n            fields: {\n                strompreis_prognose: tempArray[i] * 1000\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\n\n// Set the new payload\nmsg.payload = payload;\nmsg.precision =\"ms\";\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3010,
+        "y": 1160,
+        "wires": [
+            [
+                "8a4d264f13d8b99d",
+                "5555c5e9ff642de1"
+            ]
+        ]
+    },
+    {
+        "id": "8a4d264f13d8b99d",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "debug-PayloadForInfluxDB",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3300,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "4e361d4ec619345e",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "Set target soc (car)",
+        "func": "msg.topic = \"eauto_soc_ui\";\nmsg.payload = 60;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1390,
+        "y": 560,
+        "wires": [
+            [
+                "adbf109d81999ecc",
+                "e4b7fa2f4b0be015"
+            ]
+        ]
+    },
+    {
+        "id": "a433938a8b56d5ba",
+        "type": "delay",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "2",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 780,
+        "y": 1160,
+        "wires": [
+            [
+                "278d19dbae951fc8"
+            ]
+        ]
+    },
+    {
+        "id": "9ad59d0277ea8d49",
+        "type": "delay",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 560,
+        "y": 1280,
+        "wires": [
+            [
+                "323964f13fa2af16"
+            ]
+        ]
+    },
+    {
+        "id": "3a87f587546d135d",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "formatSocCarNow",
+        "func": "let pvData = msg.payload; // Der aktuelle Payload, z.B. [{\"time\":\"2024-09-05T15:28:29.000Z\",\"last\":39}]\n\n// Extrahiere den Wert von \"last\" aus dem Payload\n//let lastValue = pvData[0].last; // Annahme: Das erste Element des Arrays enthält den gewünschten Wert\nlet lastValue = 10;\n// Setze den msg.payload so, dass er nur den Wert \"soc_tesla\" enthält\nmsg.payload = lastValue;\nmsg.topic = \"soc_tesla\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1390,
+        "y": 1420,
+        "wires": [
+            [
+                "2c2b85ee014af363",
+                "e4b7fa2f4b0be015"
+            ]
+        ]
+    },
+    {
+        "id": "1ddbed1bd2b221cf",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "car soc - db",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 910,
+        "y": 1320,
+        "wires": []
+    },
+    {
+        "id": "2c2b85ee014af363",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "debug 59",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1360,
+        "y": 1460,
+        "wires": []
+    },
+    {
+        "id": "701b3d9437f44896",
+        "type": "inject",
+        "z": "57aed979d45b94dc",
+        "name": "Create plan for EVCC",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 120,
+        "y": 1480,
+        "wires": [
+            [
+                "72aa6d9c085b25d0"
+            ]
+        ]
+    },
+    {
+        "id": "3b3ee7e54f895753",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "debug 60",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 320,
+        "y": 1520,
+        "wires": []
+    },
+    {
+        "id": "20bbc91dcbfd389d",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "Create a Plan",
+        "func": "// Input payload\nconst inputPayload = msg.payload;\nconst outputPayload = [];\n\n// Helper function to create entries for each minute\nfunction createMinuteEntries(startTime, loadbattery,timeshift, minutes, casemessage) {\n    const entries = [];\n    const baseTime = new Date(startTime).getTime(); // Convert to milliseconds\n    for (let i = timeshift; i < (timeshift + minutes); i++) {\n        const timestamp = (baseTime +timeshift+ i * 60 * 1000); // Convert to nanoseconds\n        const loadValue = loadbattery;\n        entries.push({\n            measurement: \"1loadbattery1\",\n            fields: {\n                loadbattery: loadValue\n            },\n            tags: {\n                source: \"1loadbattery1\",\n                usedcase : casemessage\n            },\n            timestamp // Nanoseconds\n        });\n    }\n    return entries;\n}\n\n// Main processing loop\ninputPayload.forEach((entry, index) => {\n    const value = entry._value;\n    const startTime = entry._time;\n    const previousEntry = inputPayload[index - 1];\n    const nextEntry = inputPayload[index + 1];\n\n    if (value === 0) {\n        // Case: Value is 0\n        outputPayload.push(...createMinuteEntries(startTime, 0,0, 0,\"0\"));\n    } else if (value === 1) {\n        // Case: Value is 1\n        outputPayload.push(...createMinuteEntries(startTime, 1,0, 60,\"1\"));\n    } else {\n        // Case: Value is between 0 and 1\n        const minutestoload = Math.round(value * 60);\n        const prevIsOne = previousEntry && previousEntry._value > 0;\n        const nextIsOne = nextEntry && nextEntry._value > 0;\n\n        if (prevIsOne && nextIsOne) {\n            const dividedMinutes = Math.round(minutestoload / 2);\n            outputPayload.push(...createMinuteEntries(startTime, 1,0, dividedMinutes,\"a\"));\n            outputPayload.push(...createMinuteEntries(startTime, 0,dividedMinutes, 60 - minutestoload,\"a\"));\n            outputPayload.push(...createMinuteEntries(startTime, 1,dividedMinutes + 60 - minutestoload, dividedMinutes,\"a\"));\n        } else if (prevIsOne && (!nextIsOne || !nextEntry)) {\n            outputPayload.push(...createMinuteEntries(startTime, 1,0, minutestoload,\"b\"));\n            outputPayload.push(...createMinuteEntries(startTime, 0,minutestoload, 60 - minutestoload,\"b\"));\n        } else if ((!previousEntry || previousEntry._value === 0) && nextIsOne) {\n            outputPayload.push(...createMinuteEntries(startTime, 0,0, 60 - minutestoload,\"c\"));\n            outputPayload.push(...createMinuteEntries(startTime, 1, 60 - minutestoload, minutestoload,\"c\"));\n        } else if ((!prevIsOne && !nextIsOne)) {\n            const dividedMinutes = Math.round((60 - minutestoload) / 2);\n            outputPayload.push(...createMinuteEntries(startTime, 0,0, dividedMinutes,\"d\"));\n            outputPayload.push(...createMinuteEntries(startTime, 1,dividedMinutes, minutestoload,\"d\"));\n            outputPayload.push(...createMinuteEntries(startTime, 0,dividedMinutes+minutestoload, dividedMinutes,\"d\"));\n        }\n    }\n});\n\nmsg.payload = outputPayload;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 1480,
+        "wires": [
+            [
+                "2d8b5b186de98f21",
+                "efc57fab159f0dfb"
+            ]
+        ]
+    },
+    {
+        "id": "2d8b5b186de98f21",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "debug 61",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 1520,
+        "wires": []
+    },
+    {
+        "id": "60698e16ebcbb221",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "Set Timeout",
+        "func": "msg.httpRequestTimeout = 240000;\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2610,
+        "y": 520,
+        "wires": [
+            [
+                "0908e1e8147a336e"
+            ]
+        ]
+    },
+    {
+        "id": "13e83e16774bf495",
+        "type": "comment",
+        "z": "57aed979d45b94dc",
+        "name": "IN PROGRESS - Prepare a plan for EVCC and write it in influxDB - IN PROGRESS",
+        "info": "",
+        "x": 450,
+        "y": 1440,
+        "wires": []
+    },
+    {
+        "id": "2",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "Transform power from db",
+        "func": "// Access the array from msg.payload\nlet dataArray = msg.payload;\n\n// Define the result object\nlet result = {\n    start_datetime: dataArray[0]._time.replace(\"T\", \" \").replace(\"Z\", \"\"), // Take start from the first item\n    interval: \"1 hour\",\n    measurement_load0_mr: [] // Initialize an empty array for values\n};\n\n// Iterate through the data array and extract _value as integers\ndataArray.forEach(item => {\n    if (item._value !== undefined) {\n        result.measurement_load0_mr.push(Math.round(item._value)); // Round the value to nearest integer\n        //result.measurement_load0_mr.push(item._value); // Round the value to nearest integer\n    }\n});\n\n// Assign the result object back to msg.payload\nmsg.payload = result;\n\n// Return the modified message\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1310,
+        "y": 1160,
+        "wires": [
+            [
+                "3",
+                "b956fa4fe3ac2cd2"
+            ]
+        ]
+    },
+    {
+        "id": "3",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "power from db - transformed",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1320,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "b956fa4fe3ac2cd2",
+        "type": "http request",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "method": "PUT",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "{{{eos_url}}}/v1/measurement/data",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1610,
+        "y": 1160,
+        "wires": [
+            [
+                "742c0cefdcb4fd31",
+                "10c18fe6e30a2f18"
+            ]
+        ]
+    },
+    {
+        "id": "742c0cefdcb4fd31",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "power measurement",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1640,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "10c18fe6e30a2f18",
+        "type": "http request",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "{{{eos_url}}}/v1/prediction/list?key=load_mean_adjusted",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1970,
+        "y": 1160,
+        "wires": [
+            [
+                "f3a61e9d07624f19",
+                "5f407533913a270d"
+            ]
+        ]
+    },
+    {
+        "id": "f3a61e9d07624f19",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "gesamtlast",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2170,
+        "y": 1160,
+        "wires": [
+            [
+                "e4b7fa2f4b0be015",
+                "d633320e320bf056"
+            ]
+        ]
+    },
+    {
+        "id": "bb23d5b51d906279",
+        "type": "http request",
+        "z": "57aed979d45b94dc",
+        "name": "Read price prediction from EOS",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "{{{eos_url}}}/v1/prediction/list?key=elecprice_marketprice_wh",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 1090,
+        "y": 1060,
+        "wires": [
+            [
+                "c362bb15047af916",
+                "cdc48c9a0967ef93"
+            ]
+        ]
+    },
+    {
+        "id": "7173c065a55e347c",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "price from db",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1030,
+        "y": 1020,
+        "wires": []
+    },
+    {
+        "id": "c362bb15047af916",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "price prediction from eos",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1070,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "5f407533913a270d",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "power prediction",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1990,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "5555c5e9ff642de1",
+        "type": "influxdb batch",
+        "z": "57aed979d45b94dc",
+        "influxdb": "c6d7c27cb63b9301",
+        "precision": "",
+        "retentionPolicy": "",
+        "name": "",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "<<<<name-replace>>>>",
+        "bucket": "eos",
+        "x": 3260,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "efc57fab159f0dfb",
+        "type": "influxdb batch",
+        "z": "57aed979d45b94dc",
+        "influxdb": "c6d7c27cb63b9301",
+        "precision": "",
+        "retentionPolicy": "",
+        "name": "Write plan to InfluxDB",
+        "database": "database",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "<<<<name-replace>>>>",
+        "bucket": "eos",
+        "x": 1020,
+        "y": 1480,
+        "wires": []
+    },
+    {
+        "id": "b02a6d33f9efea02",
+        "type": "influxdb in",
+        "z": "57aed979d45b94dc",
+        "influxdb": "c6d7c27cb63b9301",
+        "name": "Read PV-Forecast from db",
+        "query": "from(bucket: \"pvforecast\")\n  |> range(start: -24h, stop: 47h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"solcast-HuetteOst\" or r[\"_measurement\"] == \"solcast-SüdWest\")\n  |> filter(fn: (r) => r[\"_field\"] == \"pv_estimate\")\n  |> group(columns: [\"_time\", \"pv_estimate\"])\n  |> sum()\n  |> group(columns: [\"pv_estimate\"])\n  |> sort(columns: [\"_time\"])\n  |> aggregateWindow(every: 1h, fn: last, createEmpty: false)\n  |> yield(name: \"mean\")",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "<<<<name-replace>>>>",
+        "x": 1080,
+        "y": 740,
+        "wires": [
+            [
+                "7c16e58d57d088e2"
+            ]
+        ]
+    },
+    {
+        "id": "3047bbcf8e62a313",
+        "type": "influxdb in",
+        "z": "57aed979d45b94dc",
+        "influxdb": "c6d7c27cb63b9301",
+        "name": "Read total_pv from db",
+        "query": "from(bucket: \"evcc\")\n  |> range(start: -10m, stop: 0m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"pvPower\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> filter(fn: (r) => r[\"id\"] == \"1\" or r[\"id\"] == \"2\")\n  |> last()  // Selects the last value directly\n  |> group()\n  |> aggregateWindow(every: 1h, fn: sum, createEmpty: false)\n  |> yield(name: \"last\")",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "<<<<name-replace>>>>",
+        "x": 1060,
+        "y": 840,
+        "wires": [
+            [
+                "4c7d16251cb392f9"
+            ]
+        ]
+    },
+    {
+        "id": "4c7b1d3116aff6f7",
+        "type": "influxdb in",
+        "z": "57aed979d45b94dc",
+        "influxdb": "c6d7c27cb63b9301",
+        "name": "Read soc (home) from db",
+        "query": "from(bucket: \"evcc\")\n  |> range(start: -10m, stop: 0m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"batterySoc\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> filter(fn: (r) => r[\"id\"] == \"1\")\n  |> last()  // Selects the last value directly\n  |> yield(name: \"mean\")",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "<<<<name-replace>>>>",
+        "x": 1080,
+        "y": 640,
+        "wires": [
+            [
+                "e23883ae77b9da9d"
+            ]
+        ]
+    },
+    {
+        "id": "48ea45ed2145428a",
+        "type": "influxdb in",
+        "z": "57aed979d45b94dc",
+        "influxdb": "c6d7c27cb63b9301",
+        "name": "Read price from db",
+        "query": "from(bucket: \"tibber\")\n  |> range(start: -1h, stop: 48h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"tibber\")\n  |> filter(fn: (r) => r[\"_field\"] == \"total\")\n  |> aggregateWindow(every: 1h, fn: last, createEmpty: false)\n  |> yield(name: \"mean\")",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "<<<<name-replace>>>>",
+        "x": 1050,
+        "y": 980,
+        "wires": [
+            [
+                "7173c065a55e347c",
+                "639d44b98aeceead"
+            ]
+        ]
+    },
+    {
+        "id": "278d19dbae951fc8",
+        "type": "influxdb in",
+        "z": "57aed979d45b94dc",
+        "influxdb": "c6d7c27cb63b9301",
+        "name": "read power from db",
+        "query": "from(bucket: \"evcc\")\n  |> range(start: -58h, stop: 0m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"homePower\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "<<<<name-replace>>>>",
+        "x": 1050,
+        "y": 1160,
+        "wires": [
+            [
+                "a8351ac200a9deaa",
+                "2"
+            ]
+        ]
+    },
+    {
+        "id": "323964f13fa2af16",
+        "type": "influxdb in",
+        "z": "57aed979d45b94dc",
+        "influxdb": "c6d7c27cb63b9301",
+        "name": "Read soc (car) from db",
+        "query": "import \"math\"\nfrom(bucket: \"evcc\")\n  |> range(start: -150h, stop: 0h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"vehicleSoc\")\n  |> filter(fn: (r) => r[\"_value\"] != 0)  // Filter out values where _value is 0\n  |> aggregateWindow(every: 30m, fn: last, createEmpty: false)\n  |> last()  // Selects the last value directly\n  |> map(fn: (r) => ({ r with _value: math.round(x: r._value) }))  // Round down the _value\n  |> yield(name: \"last\")",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "<<<<name-replace>>>>",
+        "x": 950,
+        "y": 1280,
+        "wires": [
+            [
+                "cfdc12658a116550",
+                "1ddbed1bd2b221cf"
+            ]
+        ]
+    },
+    {
+        "id": "72aa6d9c085b25d0",
+        "type": "influxdb in",
+        "z": "57aed979d45b94dc",
+        "influxdb": "c6d7c27cb63b9301",
+        "name": "Read EOS result from InfluxDB",
+        "query": "from(bucket: \"eos\")\n  |> range(start: -24h, stop: 48h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"ac_charge\")\n  |> yield(name: \"mean\")",
+        "rawOutput": false,
+        "precision": "",
+        "retentionPolicy": "",
+        "org": "<<<<name-replace>>>>",
+        "x": 390,
+        "y": 1480,
+        "wires": [
+            [
+                "3b3ee7e54f895753",
+                "20bbc91dcbfd389d"
+            ]
+        ]
+    },
+    {
+        "id": "1fe8d1f9e2621bee",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "eos_url",
+                "pt": "msg",
+                "to": "EOS_URL",
+                "tot": "env",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 370,
+        "y": 560,
+        "wires": [
+            [
+                "9ad59d0277ea8d49",
+                "982909bae686458e",
+                "4c7b1d3116aff6f7",
+                "4e361d4ec619345e"
+            ]
+        ]
+    },
+    {
+        "id": "7f7fb0958c43e80c",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "eos_url",
+                "pt": "msg",
+                "to": "EOS_URL",
+                "tot": "env",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 540,
+        "y": 500,
+        "wires": [
+            [
+                "e4b7fa2f4b0be015"
+            ]
+        ]
+    },
+    {
+        "id": "9e29056dea8f746c",
+        "type": "delay",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "20",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 120,
+        "y": 500,
+        "wires": [
+            [
+                "7b08a5b0c8fc1f87"
+            ]
+        ]
+    },
+    {
+        "id": "7b08a5b0c8fc1f87",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "go shorty",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 270,
+        "y": 500,
+        "wires": [
+            [
+                "7f7fb0958c43e80c"
+            ]
+        ]
+    },
+    {
+        "id": "639d44b98aeceead",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "pricefromdb",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1250,
+        "y": 980,
+        "wires": [
+            [
+                "becd4295fd79ab87"
+            ]
+        ]
+    },
+    {
+        "id": "cdc48c9a0967ef93",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "pricefromeos",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1310,
+        "y": 1100,
+        "wires": [
+            [
+                "becd4295fd79ab87"
+            ]
+        ]
+    },
+    {
+        "id": "e2cd68e62e64e2d6",
+        "type": "comment",
+        "z": "57aed979d45b94dc",
+        "name": "Readme",
+        "info": "# How to use this flow\n\n## Install dependencies\n 1. Click on the top right burger bar icon\n 2. Click on manage palette\n 3. Search for node-red-contrib-influxdb\n 4. Install\n\n## Configure InfluxDB settings\n 1. Double click on one influx db node\n 2. Adjust the InfluxDB settings\n\n\n## This Flow is using environment variables.\n- double click on the flow name on the top left\n- click on the \"list\" icon below \"done\" and next to the settings icon\n- change IP and port\n\n## Write to InfluxDB\nThis flow writes data to influx db and expects a eos bucket",
+        "x": 420,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "dd3380c0c5e2d7f5",
+        "type": "comment",
+        "z": "57aed979d45b94dc",
+        "name": "ToDo List",
+        "info": "- Replace PV-Forecast nodes with https://akkudoktor-eos.readthedocs.io/en/latest/akkudoktoreos/prediction.html#pv-power-prediction\n- Add error handling and logging\n- Use variables in read influx DB nodes (bucket_names)\n- Use variables in write influx DB nodes\n- Add EVCC Integration\n-\n",
+        "x": 640,
+        "y": 400,
+        "wires": []
+    }
+]
