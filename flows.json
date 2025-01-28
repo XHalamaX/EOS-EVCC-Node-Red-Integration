@@ -253,7 +253,7 @@
         "type": "function",
         "z": "57aed979d45b94dc",
         "name": "filterAndFormatStompreisFromMidnight",
-        "func": "// Get the current date\nlet now = new Date();\n\nif (msg.topic == \"pricefromdb\"){\n    let tmp = msg.payload[0];\n    msg.payload[0] = msg.payload[1];\n    msg.payload[1] = tmp;\n}\n\n// Limit the filtered data to a maximum of 48 entries\n//let limitedData = filteredData.slice(0, 48);\n\n// Extract \"_value\", round it to 2 decimal places, and adjust its scale\nlet strompreis = msg.payload[0].map(item => item._value !== null ? parseFloat((item._value / 1000).toFixed(8)) : 0);\nstrompreis = strompreis.slice(0, 48);\n\n// Step 3: Use data from the second array to fill in missing entries up to 48 hours\nlet secondaryData = msg.payload[1];\nlet generatedValues = [];\n\nfor (let i = strompreis.length; i < 48; i++) {\n    strompreis.push(secondaryData[i]);\n}\n\n// Set the payload with the final data\nmsg.payload = strompreis;\nmsg.topic = \"strompreis\";\nreturn msg;\n",
+        "func": "// Get the current date\nlet now = new Date();\n\nif (msg.topic == \"pricefromdb\"){\n    let tmp = msg.payload[0];\n    msg.payload[0] = msg.payload[1];\n    msg.payload[1] = tmp;\n}\n\n// Limit the filtered data to a maximum of 48 entries\n//let limitedData = filteredData.slice(0, 48);\n\n// Extract \"_value\", round it to 2 decimal places, and adjust its scale\nlet strompreis = msg.payload[0].map(item => item._value !== null ? parseFloat((item._value / 1000).toFixed(8)) : 0);\nstrompreis = strompreis.slice(0, 48);\n\n// Step 3: Use data from the second array to fill in missing entries up to 48 hours\nlet secondaryData = msg.payload[1];\nlet generatedValues = [];\n\nfor (let i = strompreis.length; i < 48; i++) {\n    if (secondaryData[i] == null) {\n        strompreis.push(parseFloat(msg.payload[0][msg.payload[0].length-1]._value/ 1000)).toFixed(8);\n        msg.warning = \"price issue - use placeholder\";\n    }\n    else{\n        strompreis.push(parseFloat((secondaryData[i]).toFixed(8)));\n    }\n}\n\n// Set the payload with the final data\nmsg.payload = strompreis;\nmsg.topic = \"strompreis\";\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -858,7 +858,7 @@
         "method": "GET",
         "ret": "obj",
         "paytoqs": "ignore",
-        "url": "{{{eos_url}}}/v1/prediction/list?key=load_mean_adjusted",
+        "url": "{{{eos_url}}}/v1/prediction/list?key=load_mean",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -866,12 +866,12 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 1970,
+        "x": 1870,
         "y": 1160,
         "wires": [
             [
-                "f3a61e9d07624f19",
-                "5f407533913a270d"
+                "5f407533913a270d",
+                "a047bdc2cfc8d52e"
             ]
         ]
     },
@@ -894,7 +894,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 2170,
+        "x": 2230,
         "y": 1160,
         "wires": [
             [
@@ -975,7 +975,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1980,
+        "x": 1880,
         "y": 1220,
         "wires": []
     },
@@ -1334,5 +1334,97 @@
         "x": 640,
         "y": 400,
         "wires": []
+    },
+    {
+        "id": "a210ffdef6f2bc41",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1740,
+        "y": 920,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a047bdc2cfc8d52e",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "verify power",
+        "func": "// Überprüfe, ob die Payload ein Array ist\nif (Array.isArray(msg.payload)) {\n    // Iteriere durch das Array und prüfe, ob jeder Wert eine Zahl ist\n    for (let i = 0; i < msg.payload.length; i++) {\n        if (isNaN(msg.payload[i])) {\n            // Wenn der Wert keine Zahl ist, setze ihn auf 500\n            msg.payload[i] = 500;\n        } else {\n            // Wenn der Wert eine Zahl ist, konvertiere ihn zu einer Zahl (falls nötig)\n            msg.payload[i] = Number(msg.payload[i]);\n        }\n    }\n    \n    // Überprüfe, ob das Array 48 Einträge hat, wenn nicht, fülle es mit 500 auf\n    while (msg.payload.length < 48) {\n        msg.payload.push(500);\n    }\n    \n    // Wenn das Array mehr als 48 Einträge hat, kürze es auf 48\n    if (msg.payload.length > 48) {\n        msg.payload = msg.payload.slice(0, 48);\n    }\n} else {\n    // Wenn msg.payload kein Array ist, erstelle ein Array mit 48 Einträgen, die den Wert 500 haben\n    node.warn(\"Die Payload ist kein Array! Erstelle ein Array mit 48 Einträgen.\");\n    \n    // Array mit 48 Werten, die jeweils 500 sind\n    msg.payload = new Array(48).fill(500);  // Füllt das Array mit 48 Einträgen, die den Wert 500 haben\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 2070,
+        "y": 1160,
+        "wires": [
+            [
+                "757914590366c534",
+                "f3a61e9d07624f19"
+            ]
+        ]
+    },
+    {
+        "id": "757914590366c534",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "power prediction - verification",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2120,
+        "y": 1220,
+        "wires": []
+    },
+    {
+        "id": "ca37cb9454e035c6",
+        "type": "inject",
+        "z": "57aed979d45b94dc",
+        "name": "Inject working test payload",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "go shorty",
+        "payload": "{\"ems\":{\"preis_euro_pro_wh_akku\":0.0007,\"einspeiseverguetung_euro_pro_wh\":0.00007,\"gesamtlast\":[500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500],\"pv_prognose_wh\":[300,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,180,960,2230,4019.9999999999995,5050,7570,1160,420,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,410,1160,1610,2050,2029.9999999999998,2160,1840],\"strompreis_euro_pro_wh\":[0.0003784,0.0003868,0.0003899,0.0003725,0.0003653,0.0003247,0.0003158,0.0003069,0.0002886,0.0003163,0.0003111,0.0003049,0.0003019,0.0003059,0.0003154,0.0003228,0.0003802,0.0003815,0.0003672,0.0003369,0.0003181,0.0003131,0.0003137,0.0003162,0.0003342,0.0003698,0.0003899,0.0003905,0.000386,0.0003689,0.0003543,0.0003452,0.0003301,0.0003105,0.0003092,0.00030561,0.00030459,0.00030252,0.00030428,0.00031222,0.00033462,0.00036252,0.00038452,0.00037676,0.00036253,0.00035264,0.00034102,0.00033709]},\"pv_akku\":{\"capacity_wh\":12000,\"charging_efficiency\":0.92,\"discharging_efficiency\":0.92,\"max_charge_power_w\":5700,\"initial_soc_percentage\":66,\"min_soc_percentage\":5,\"max_soc_percentage\":100},\"inverter\":{\"max_power_wh\":15500},\"eauto\":{\"capacity_wh\":64000,\"charging_efficiency\":0.88,\"discharging_efficiency\":0.88,\"max_charge_power_w\":11040,\"initial_soc_percentage\":98,\"min_soc_percentage\":60,\"max_soc_percentage\":100},\"temperature_forecast\":[18.3,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18.02,18.18,18.96,20.23,22.02,23.05,25.57,19.16,18.42,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18.01,18.41,19.16,19.61,20.05,20.03,20.16,19.84],\"start_solution\":null}",
+        "payloadType": "json",
+        "x": 2570,
+        "y": 480,
+        "wires": [
+            [
+                "0908e1e8147a336e"
+            ]
+        ]
     }
 ]
