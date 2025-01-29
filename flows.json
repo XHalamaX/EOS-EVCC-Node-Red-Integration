@@ -58,7 +58,7 @@
         "type": "function",
         "z": "57aed979d45b94dc",
         "name": "function rule them all",
-        "func": "context.data = context.data || {};\nswitch (msg.topic) {\n    case \"soc\": \n        context.data.soc = msg.payload;\n        return null;\n    case \"strompreis\":\n        //context.data.strompreis = msg.payload.map(p => p / 100); // Convert to euro/Wh\n        context.data.strompreis = msg.payload;\n        return null;        \n    case \"gesamtlast\":\n        context.data.gesamtlast = msg.payload.map(p => p * 1);; // Example multiplier for conversion\n        return null;               \n    case \"pv_forecast\":\n        context.data.temperature_forecast = msg.payload.map(t => t + 18); // Example adjustment for temperatures\n        context.data.pv_forecast = msg.payload.map(v => v * 1000); // Convert to Wh\n        return null;                \n    case \"soc_tesla\":\n        context.data.soc_tesla = msg.payload;\n        return null;\n    case \"akku_preis\":\n        context.data.akku_preis = parseFloat(msg.payload);\n        return null;          \n    case \"eauto_soc_ui\":\n        context.data.eauto_soc_ui = parseFloat(msg.payload);\n        return null;        \n    case \"pvpowernow\":\n        context.data.pvpowernow = parseFloat(msg.payload);\n        return null;                \n    case \"solution\":\n        context.data.start_solution = msg.payload.start_solution;\n        return null;           \n    case \"spuel\":\n        context.data.spuel = msg.payload;\n        return null;     \n    case \"spuel_onoff\":\n        context.data.spuel_onoff = msg.payload;\n        return null;                        \n    case \"go shorty\":\n        break;   \n    default:\n        return null; \n}\n\n// Defaults for missing data\nif (context.data.strompreis == null){\n    console.log(\"Missing price data\");\n    return null;\n}\n\nif (context.data.akku_preis == null)\n    context.data.akku_preis = 7.0;\n\nif (context.data.eauto_soc_ui == null)\n    context.data.eauto_soc_ui = 20.0;\n\nif (context.data.pvpowernow == null)\n    context.data.pvpowernow = null;\n\nif (context.data.start_solution == null)\n    context.data.start_solution = null; // Example default solution\n\nif (context.data.soc == null || context.data.soc_tesla == null || context.data.eauto_soc_ui == null) {\n    return msg;\n}\n\nmsg.payload = {\n    ems: {\n        preis_euro_pro_wh_akku: context.data.akku_preis * (0.01 / 100.0),\n        einspeiseverguetung_euro_pro_wh: 7 / (1000.0 * 100.0),\n        gesamtlast: context.data.gesamtlast,\n        pv_prognose_wh: context.data.pv_forecast,\n        strompreis_euro_pro_wh: context.data.strompreis\n    },\n    pv_akku: {\n        capacity_wh: 12000,\n        charging_efficiency: 0.92,\n        discharging_efficiency: 0.92,\n        max_charge_power_w: 5700,\n        initial_soc_percentage: context.data.soc,\n        min_soc_percentage: 5,\n        max_soc_percentage: 100\n    },\n    inverter: {\n        max_power_wh: 15500\n    },\n    eauto: {\n        capacity_wh: 64000,\n        charging_efficiency: 0.88,\n        discharging_efficiency: 0.88,\n        max_charge_power_w: 11040,\n        initial_soc_percentage: context.data.soc_tesla,\n        min_soc_percentage: context.data.eauto_soc_ui,\n        max_soc_percentage: 100\n    },\n    temperature_forecast: context.data.temperature_forecast,\n    start_solution: context.data.start_solution\n};\nreturn msg;\n",
+        "func": "context.data = context.data || {};\nswitch (msg.topic) {\n    case \"soc\": \n        context.data.soc = msg.payload;\n        return null;\n    case \"strompreis\":\n        //context.data.strompreis = msg.payload.map(p => p / 100); // Convert to euro/Wh\n        context.data.strompreis = msg.payload;\n        return null;        \n    case \"gesamtlast\":\n        context.data.gesamtlast = msg.payload.map(p => p * 1);; // Example multiplier for conversion\n        return null;               \n    case \"pv_forecast\":\n        //context.data.temperature_forecast = msg.payload.map(t => t + 18); // Example adjustment for temperatures\n        context.data.pv_forecast = msg.payload.map(v => v * 1000); // Convert to Wh\n        return null;                \n    case \"temperature_forecast\":\n        context.data.temperature_forecast = msg.payload;\n        return null; \n    case \"soc_tesla\":\n        context.data.soc_tesla = msg.payload;\n        return null;\n    case \"akku_preis\":\n        context.data.akku_preis = parseFloat(msg.payload);\n        return null;          \n    case \"eauto_soc_ui\":\n        context.data.eauto_soc_ui = parseFloat(msg.payload);\n        return null;        \n    case \"pvpowernow\":\n        context.data.pvpowernow = parseFloat(msg.payload);\n        return null;                \n    case \"solution\":\n        context.data.start_solution = msg.payload.start_solution;\n        return null;           \n    case \"spuel\":\n        context.data.spuel = msg.payload;\n        return null;     \n    case \"spuel_onoff\":\n        context.data.spuel_onoff = msg.payload;\n        return null;                        \n    case \"go shorty\":\n        break;   \n    default:\n        return null; \n}\n\n// Defaults for missing data\nif (context.data.strompreis == null){\n    console.log(\"Missing price data\");\n    return null;\n}\n\nif (context.data.akku_preis == null)\n    context.data.akku_preis = 7.0;\n\nif (context.data.eauto_soc_ui == null)\n    context.data.eauto_soc_ui = 20.0;\n\nif (context.data.pvpowernow == null)\n    context.data.pvpowernow = null;\n\nif (context.data.start_solution == null)\n    context.data.start_solution = null; // Example default solution\n\nif (context.data.soc == null || context.data.soc_tesla == null || context.data.eauto_soc_ui == null) {\n    return msg;\n}\n\nmsg.payload = {\n    ems: {\n        preis_euro_pro_wh_akku: context.data.akku_preis * (0.01 / 100.0),\n        einspeiseverguetung_euro_pro_wh: 7 / (1000.0 * 100.0),\n        gesamtlast: context.data.gesamtlast,\n        pv_prognose_wh: context.data.pv_forecast,\n        strompreis_euro_pro_wh: context.data.strompreis\n    },\n    pv_akku: {\n        capacity_wh: 12000,\n        charging_efficiency: 0.92,\n        discharging_efficiency: 0.92,\n        max_charge_power_w: 5700,\n        initial_soc_percentage: context.data.soc,\n        min_soc_percentage: 5,\n        max_soc_percentage: 100\n    },\n    inverter: {\n        max_power_wh: 15500\n    },\n    eauto: {\n        capacity_wh: 64000,\n        charging_efficiency: 0.88,\n        discharging_efficiency: 0.88,\n        max_charge_power_w: 11040,\n        initial_soc_percentage: context.data.soc_tesla,\n        min_soc_percentage: context.data.eauto_soc_ui,\n        max_soc_percentage: 100\n    },\n    temperature_forecast: context.data.temperature_forecast,\n    start_solution: context.data.start_solution\n};\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -385,8 +385,8 @@
         "z": "57aed979d45b94dc",
         "name": "HARDCODED - Read car SOC - HARDCODED",
         "info": "",
-        "x": 1460,
-        "y": 1380,
+        "x": 1670,
+        "y": 1400,
         "wires": [],
         "icon": "node-red/alert.svg"
     },
@@ -394,7 +394,7 @@
         "id": "933cd0a1bd26c138",
         "type": "inject",
         "z": "57aed979d45b94dc",
-        "name": "Start Optimization",
+        "name": "Start Optimization once",
         "props": [
             {
                 "p": "topic",
@@ -406,8 +406,8 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "go shorty",
-        "x": 116,
-        "y": 459,
+        "x": 120,
+        "y": 460,
         "wires": [
             [
                 "7f7fb0958c43e80c"
@@ -600,7 +600,8 @@
         "y": 1280,
         "wires": [
             [
-                "323964f13fa2af16"
+                "323964f13fa2af16",
+                "9523c491b8336aea"
             ]
         ]
     },
@@ -616,8 +617,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1390,
-        "y": 1420,
+        "x": 1710,
+        "y": 1440,
         "wires": [
             [
                 "2c2b85ee014af363",
@@ -654,8 +655,8 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1360,
-        "y": 1460,
+        "x": 1700,
+        "y": 1480,
         "wires": []
     },
     {
@@ -858,7 +859,7 @@
         "method": "GET",
         "ret": "obj",
         "paytoqs": "ignore",
-        "url": "{{{eos_url}}}/v1/prediction/list?key=load_mean",
+        "url": "{{{eos_url}}}/v1/prediction/list?key=load_mean_adjusted",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -1343,9 +1344,9 @@
         "rules": [
             {
                 "t": "set",
-                "p": "payload",
+                "p": "topic",
                 "pt": "msg",
-                "to": "",
+                "to": "temperature_forecast",
                 "tot": "str"
             }
         ],
@@ -1354,10 +1355,13 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1740,
-        "y": 920,
+        "x": 1110,
+        "y": 1380,
         "wires": [
-            []
+            [
+                "c0a46c77df270800",
+                "c8c29f8b8b9bdf8c"
+            ]
         ]
     },
     {
@@ -1419,11 +1423,125 @@
         "topic": "go shorty",
         "payload": "{\"ems\":{\"preis_euro_pro_wh_akku\":0.0007,\"einspeiseverguetung_euro_pro_wh\":0.00007,\"gesamtlast\":[500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500],\"pv_prognose_wh\":[300,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,180,960,2230,4019.9999999999995,5050,7570,1160,420,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,410,1160,1610,2050,2029.9999999999998,2160,1840],\"strompreis_euro_pro_wh\":[0.0003784,0.0003868,0.0003899,0.0003725,0.0003653,0.0003247,0.0003158,0.0003069,0.0002886,0.0003163,0.0003111,0.0003049,0.0003019,0.0003059,0.0003154,0.0003228,0.0003802,0.0003815,0.0003672,0.0003369,0.0003181,0.0003131,0.0003137,0.0003162,0.0003342,0.0003698,0.0003899,0.0003905,0.000386,0.0003689,0.0003543,0.0003452,0.0003301,0.0003105,0.0003092,0.00030561,0.00030459,0.00030252,0.00030428,0.00031222,0.00033462,0.00036252,0.00038452,0.00037676,0.00036253,0.00035264,0.00034102,0.00033709]},\"pv_akku\":{\"capacity_wh\":12000,\"charging_efficiency\":0.92,\"discharging_efficiency\":0.92,\"max_charge_power_w\":5700,\"initial_soc_percentage\":66,\"min_soc_percentage\":5,\"max_soc_percentage\":100},\"inverter\":{\"max_power_wh\":15500},\"eauto\":{\"capacity_wh\":64000,\"charging_efficiency\":0.88,\"discharging_efficiency\":0.88,\"max_charge_power_w\":11040,\"initial_soc_percentage\":98,\"min_soc_percentage\":60,\"max_soc_percentage\":100},\"temperature_forecast\":[18.3,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18.02,18.18,18.96,20.23,22.02,23.05,25.57,19.16,18.42,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18.01,18.41,19.16,19.61,20.05,20.03,20.16,19.84],\"start_solution\":null}",
         "payloadType": "json",
-        "x": 2570,
+        "x": 2410,
+        "y": 480,
+        "wires": [
+            [
+                "175bf928862d4dc3"
+            ]
+        ]
+    },
+    {
+        "id": "9523c491b8336aea",
+        "type": "http request",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "{{{eos_url}}}/v1/prediction/list?key=weather_temp_air",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 910,
+        "y": 1380,
+        "wires": [
+            [
+                "a210ffdef6f2bc41"
+            ]
+        ]
+    },
+    {
+        "id": "c0a46c77df270800",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "temperatur prediction",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1140,
+        "y": 1420,
+        "wires": []
+    },
+    {
+        "id": "c8c29f8b8b9bdf8c",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "verify power",
+        "func": "// Überprüfe, ob die Payload ein Array ist\nif (Array.isArray(msg.payload)) {\n    // Iteriere durch das Array und prüfe, ob jeder Wert eine Zahl ist\n    for (let i = 0; i < msg.payload.length; i++) {\n        if (isNaN(msg.payload[i])) {\n            // Wenn der Wert keine Zahl ist, setze ihn auf 500\n            msg.payload[i] = 500;\n        } else {\n            // Wenn der Wert eine Zahl ist, konvertiere ihn zu einer Zahl (falls nötig)\n            msg.payload[i] = Number(msg.payload[i]);\n        }\n    }\n    \n    // Überprüfe, ob das Array 48 Einträge hat, wenn nicht, fülle es mit 500 auf\n    while (msg.payload.length < 48) {\n        msg.payload.push(500);\n    }\n    \n    // Wenn das Array mehr als 48 Einträge hat, kürze es auf 48\n    if (msg.payload.length > 48) {\n        msg.payload = msg.payload.slice(0, 48);\n    }\n} else {\n    // Wenn msg.payload kein Array ist, erstelle ein Array mit 48 Einträgen, die den Wert 500 haben\n    node.warn(\"Die Payload ist kein Array! Erstelle ein Array mit 48 Einträgen.\");\n    \n    // Array mit 48 Werten, die jeweils 500 sind\n    msg.payload = new Array(48).fill(6);  // Füllt das Array mit 48 Einträgen, die den Wert 500 haben\n}\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1330,
+        "y": 1380,
+        "wires": [
+            [
+                "e4b7fa2f4b0be015"
+            ]
+        ]
+    },
+    {
+        "id": "175bf928862d4dc3",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "eos_url",
+                "pt": "msg",
+                "to": "EOS_URL",
+                "tot": "env",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2620,
         "y": 480,
         "wires": [
             [
                 "0908e1e8147a336e"
+            ]
+        ]
+    },
+    {
+        "id": "41fe7eadbc39a647",
+        "type": "inject",
+        "z": "57aed979d45b94dc",
+        "name": "Start Preparation once",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": "5",
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 120,
+        "y": 620,
+        "wires": [
+            [
+                "1fe8d1f9e2621bee"
             ]
         ]
     }
