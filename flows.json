@@ -147,8 +147,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1370,
-        "y": 780,
+        "x": 1570,
+        "y": 900,
         "wires": []
     },
     {
@@ -163,8 +163,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1460,
-        "y": 740,
+        "x": 1660,
+        "y": 860,
         "wires": [
             [
                 "c74ea27f5b853cd7",
@@ -185,8 +185,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1380,
-        "y": 880,
+        "x": 1580,
+        "y": 1000,
         "wires": []
     },
     {
@@ -201,8 +201,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1390,
-        "y": 840,
+        "x": 1590,
+        "y": 960,
         "wires": [
             [
                 "4b3194b8944cbea2",
@@ -249,45 +249,6 @@
         ]
     },
     {
-        "id": "6fdd45cbe4435b07",
-        "type": "function",
-        "z": "57aed979d45b94dc",
-        "name": "filterAndFormatStompreisFromMidnight",
-        "func": "// Get the current date\nlet now = new Date();\n\nif (msg.topic == \"pricefromdb\"){\n    let tmp = msg.payload[0];\n    msg.payload[0] = msg.payload[1];\n    msg.payload[1] = tmp;\n}\n\n// Limit the filtered data to a maximum of 48 entries\n//let limitedData = filteredData.slice(0, 48);\n\n// Extract \"_value\", round it to 2 decimal places, and adjust its scale\nlet strompreis = msg.payload[0].map(item => item._value !== null ? parseFloat((item._value / 1000).toFixed(8)) : 0);\nstrompreis = strompreis.slice(0, 48);\n\n// Step 3: Use data from the second array to fill in missing entries up to 48 hours\nlet secondaryData = msg.payload[1];\nlet generatedValues = [];\n\nfor (let i = strompreis.length; i < 48; i++) {\n    if (secondaryData[i] == null) {\n        strompreis.push(parseFloat(msg.payload[0][msg.payload[0].length-1]._value/ 1000)).toFixed(8);\n        msg.warning = \"price issue - use placeholder\";\n    }\n    else{\n        strompreis.push(parseFloat((secondaryData[i]).toFixed(8)));\n    }\n}\n\n// Set the payload with the final data\nmsg.payload = strompreis;\nmsg.topic = \"strompreis\";\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 1960,
-        "y": 1020,
-        "wires": [
-            [
-                "824bab03be4c643f",
-                "e4b7fa2f4b0be015",
-                "d633320e320bf056"
-            ]
-        ]
-    },
-    {
-        "id": "824bab03be4c643f",
-        "type": "debug",
-        "z": "57aed979d45b94dc",
-        "name": "price  - merged from db and eos",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1930,
-        "y": 1060,
-        "wires": []
-    },
-    {
         "id": "4c89689f328215f9",
         "type": "delay",
         "z": "57aed979d45b94dc",
@@ -304,11 +265,10 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 800,
-        "y": 1040,
+        "x": 860,
+        "y": 1060,
         "wires": [
             [
-                "48ea45ed2145428a",
                 "bb23d5b51d906279"
             ]
         ]
@@ -330,14 +290,14 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 600,
-        "y": 740,
+        "x": 700,
+        "y": 860,
         "wires": [
             [
-                "b02a6d33f9efea02",
                 "a433938a8b56d5ba",
                 "4c89689f328215f9",
-                "3047bbcf8e62a313"
+                "3047bbcf8e62a313",
+                "705cf3fac8e3b43b"
             ]
         ]
     },
@@ -449,58 +409,11 @@
         "wires": []
     },
     {
-        "id": "e71174e359ca935d",
-        "type": "debug",
-        "z": "57aed979d45b94dc",
-        "name": "price - joined db & eos ",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1520,
-        "y": 1060,
-        "wires": []
-    },
-    {
-        "id": "becd4295fd79ab87",
-        "type": "join",
-        "z": "57aed979d45b94dc",
-        "name": "Join price from database with price forecast",
-        "mode": "custom",
-        "build": "array",
-        "property": "payload",
-        "propertyType": "msg",
-        "key": "topic",
-        "joiner": "\\n",
-        "joinerType": "str",
-        "useparts": false,
-        "accumulate": false,
-        "timeout": "",
-        "count": "2",
-        "reduceRight": false,
-        "reduceExp": "",
-        "reduceInit": "",
-        "reduceInitType": "num",
-        "reduceFixup": "",
-        "x": 1570,
-        "y": 1020,
-        "wires": [
-            [
-                "e71174e359ca935d",
-                "6fdd45cbe4435b07"
-            ]
-        ]
-    },
-    {
         "id": "d633320e320bf056",
         "type": "function",
         "z": "57aed979d45b94dc",
         "name": "Prepare Payload for InfluxDBv2",
-        "func": "let payload = [];\nlet tempArray = [];\n\n// Get the current time and round down to the nearest hour\nlet baseTime = new Date();\nbaseTime.setMinutes(0, 0, 0); // Set minutes, seconds, and milliseconds to 0\nlet label = \"\";\nif (msg.topic == \"go shorty\") {\n    label = \"ac_charge\";\n    tempArray = msg.payload.ac_charge;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                relative: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"discharge_allowed\";\n    tempArray = msg.payload.discharge_allowed;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                discharge_allowed: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"eautocharge_hours_float\";\n    tempArray = msg.payload.eautocharge_hours_float;\n\n    // If tempArray is null, initialize it as an array of 48 zeros\n    if (tempArray === null) {\n        tempArray = Array(48).fill(0);\n    }\n\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(i);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                eautocharge_hours_float: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"akku_soc_pro_stunde\";\n    tempArray = msg.payload.result.akku_soc_pro_stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                akku_soc_pro_stunde: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"EAuto_SoC_pro_Stunde\";\n    tempArray = msg.payload.result.EAuto_SoC_pro_Stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                EAuto_SoC_pro_Stunde: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"Last_Wh_pro_Stunde_optimized\";\n    tempArray = msg.payload.result.Last_Wh_pro_Stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                Last_Wh_pro_Stunde_optimized: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"gesamtlast\") {\n    label = \"Last_Wh_pro_Stunde_prognose\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                Last_Wh_pro_Stunde_prognose: tempArray[i] * 1000\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"strompreis\") {\n    label = \"strompreis_prognose\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        //timestamp = timestamp.setHours((i));\n        //timestamp = new Date(timestamp);\n        timestamp.setHours(baseTime.getHours() + (i));\n        payload.push({\n            measurement: label,\n            fields: {\n                strompreis_prognose: tempArray[i] * 1000\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\n\n// Set the new payload\nmsg.payload = payload;\nmsg.precision =\"ms\";\nreturn msg;\n",
+        "func": "let payload = [];\nlet tempArray = [];\n\n// Get the current time and round down to the nearest hour\nlet baseTime = new Date();\nbaseTime.setMinutes(0, 0, 0); // Set minutes, seconds, and milliseconds to 0\nlet label = \"\";\nif (msg.topic == \"go shorty\") {\n    label = \"ac_charge\";\n    tempArray = msg.payload.ac_charge;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                relative: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"discharge_allowed\";\n    tempArray = msg.payload.discharge_allowed;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                discharge_allowed: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"eautocharge_hours_float\";\n    tempArray = msg.payload.eautocharge_hours_float;\n\n    // If tempArray is null, initialize it as an array of 48 zeros\n    if (tempArray === null) {\n        tempArray = Array(48).fill(0);\n    }\n\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(i);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                eautocharge_hours_float: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"akku_soc_pro_stunde\";\n    tempArray = msg.payload.result.akku_soc_pro_stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                akku_soc_pro_stunde: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"EAuto_SoC_pro_Stunde\";\n    tempArray = msg.payload.result.EAuto_SoC_pro_Stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                EAuto_SoC_pro_Stunde: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"Last_Wh_pro_Stunde_optimized\";\n    tempArray = msg.payload.result.Last_Wh_pro_Stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                Last_Wh_pro_Stunde_optimized: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"gesamtlast\") {\n    label = \"Last_Wh_pro_Stunde_prognose\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                Last_Wh_pro_Stunde_prognose: tempArray[i] * 1000\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"strompreis\") {\n    label = \"strompreis_prognose\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        //timestamp = timestamp.setHours((i));\n        //timestamp = new Date(timestamp);\n        timestamp.setHours((i));\n        payload.push({\n            measurement: label,\n            fields: {\n                strompreis_prognose: tempArray[i] * 1000\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\n\n// Set the new payload\nmsg.payload = payload;\nmsg.precision =\"ms\";\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -571,7 +484,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 780,
+        "x": 860,
         "y": 1160,
         "wires": [
             [
@@ -859,7 +772,7 @@
         "method": "GET",
         "ret": "obj",
         "paytoqs": "ignore",
-        "url": "{{{eos_url}}}/v1/prediction/list?key=load_mean_adjusted",
+        "url": "{{{eos_url}}}/v1/prediction/list?key=load_mean",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -912,7 +825,7 @@
         "method": "GET",
         "ret": "obj",
         "paytoqs": "ignore",
-        "url": "{{{eos_url}}}/v1/prediction/list?key=elecprice_marketprice_wh",
+        "url": "{{{eos_url}}}/v1/prediction/list?key=elecprice_marketprice_wh&start_datetime={{{start_datetime}}}&end_datetime={{{end_datetime}}}",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -920,31 +833,14 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 1090,
+        "x": 1310,
         "y": 1060,
         "wires": [
             [
                 "c362bb15047af916",
-                "cdc48c9a0967ef93"
+                "dd7e494b57590c5b"
             ]
         ]
-    },
-    {
-        "id": "7173c065a55e347c",
-        "type": "debug",
-        "z": "57aed979d45b94dc",
-        "name": "price from db",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1030,
-        "y": 1020,
-        "wires": []
     },
     {
         "id": "c362bb15047af916",
@@ -955,11 +851,11 @@
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "payload",
-        "targetType": "msg",
+        "complete": "true",
+        "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1070,
+        "x": 1290,
         "y": 1100,
         "wires": []
     },
@@ -1020,13 +916,13 @@
         "z": "57aed979d45b94dc",
         "influxdb": "c6d7c27cb63b9301",
         "name": "Read PV-Forecast from db",
-        "query": "from(bucket: \"pvforecast\")\n  |> range(start: -24h, stop: 47h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"solcast-HuetteOst\" or r[\"_measurement\"] == \"solcast-SüdWest\")\n  |> filter(fn: (r) => r[\"_field\"] == \"pv_estimate\")\n  |> group(columns: [\"_time\", \"pv_estimate\"])\n  |> sum()\n  |> group(columns: [\"pv_estimate\"])\n  |> sort(columns: [\"_time\"])\n  |> aggregateWindow(every: 1h, fn: last, createEmpty: false)\n  |> yield(name: \"mean\")",
+        "query": "",
         "rawOutput": false,
         "precision": "",
         "retentionPolicy": "",
         "org": "<<<<name-replace>>>>",
-        "x": 1080,
-        "y": 740,
+        "x": 1280,
+        "y": 860,
         "wires": [
             [
                 "7c16e58d57d088e2"
@@ -1044,8 +940,8 @@
         "precision": "",
         "retentionPolicy": "",
         "org": "<<<<name-replace>>>>",
-        "x": 1060,
-        "y": 840,
+        "x": 1260,
+        "y": 960,
         "wires": [
             [
                 "4c7d16251cb392f9"
@@ -1068,26 +964,6 @@
         "wires": [
             [
                 "e23883ae77b9da9d"
-            ]
-        ]
-    },
-    {
-        "id": "48ea45ed2145428a",
-        "type": "influxdb in",
-        "z": "57aed979d45b94dc",
-        "influxdb": "c6d7c27cb63b9301",
-        "name": "Read price from db",
-        "query": "from(bucket: \"tibber\")\n  |> range(start: -1h, stop: 48h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"tibber\")\n  |> filter(fn: (r) => r[\"_field\"] == \"total\")\n  |> aggregateWindow(every: 1h, fn: last, createEmpty: false)\n  |> yield(name: \"mean\")",
-        "rawOutput": false,
-        "precision": "",
-        "retentionPolicy": "",
-        "org": "<<<<name-replace>>>>",
-        "x": 1050,
-        "y": 980,
-        "wires": [
-            [
-                "7173c065a55e347c",
-                "639d44b98aeceead"
             ]
         ]
     },
@@ -1176,9 +1052,9 @@
         "wires": [
             [
                 "9ad59d0277ea8d49",
-                "982909bae686458e",
                 "4c7b1d3116aff6f7",
-                "4e361d4ec619345e"
+                "4e361d4ec619345e",
+                "d116187b8aaf13a7"
             ]
         ]
     },
@@ -1259,60 +1135,6 @@
         "wires": [
             [
                 "7f7fb0958c43e80c"
-            ]
-        ]
-    },
-    {
-        "id": "639d44b98aeceead",
-        "type": "change",
-        "z": "57aed979d45b94dc",
-        "name": "",
-        "rules": [
-            {
-                "t": "set",
-                "p": "topic",
-                "pt": "msg",
-                "to": "pricefromdb",
-                "tot": "str"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 1250,
-        "y": 980,
-        "wires": [
-            [
-                "becd4295fd79ab87"
-            ]
-        ]
-    },
-    {
-        "id": "cdc48c9a0967ef93",
-        "type": "change",
-        "z": "57aed979d45b94dc",
-        "name": "",
-        "rules": [
-            {
-                "t": "set",
-                "p": "topic",
-                "pt": "msg",
-                "to": "pricefromeos",
-                "tot": "str"
-            }
-        ],
-        "action": "",
-        "property": "",
-        "from": "",
-        "to": "",
-        "reg": false,
-        "x": 1310,
-        "y": 1100,
-        "wires": [
-            [
-                "becd4295fd79ab87"
             ]
         ]
     },
@@ -1544,5 +1366,120 @@
                 "1fe8d1f9e2621bee"
             ]
         ]
+    },
+    {
+        "id": "d116187b8aaf13a7",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "Create start & end datetime",
+        "func": "// Get the current date in Germany timezone\nlet date = new Date();\nlet utcdate_start = new Date(date.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" }));\nutcdate_start.setHours(0, 0, 0, 0);\nlet utcdate_end = new Date(utcdate_start);\n// Add 2 days\nutcdate_end.setDate(utcdate_end.getDate() + 2);\n\nutcdate_start.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" })\nutcdate_end.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" })\n\n// Format it as \"2025-02-02T00:00:00.000Z\"\nutcdate_end = utcdate_end.toISOString();\nutcdate_start = utcdate_start.toISOString();\n\n// Set time to 00:00 in Germany timezone\nlet options = {\n    timeZone: \"Europe/Berlin\",\n    year: \"numeric\",\n    month: \"2-digit\",\n    day: \"2-digit\",\n    hour: \"2-digit\",\n    minute: \"2-digit\",\n    second: \"2-digit\",\n    hourCycle: \"h23\"\n};\n\n// Format the date using Berlin's timezone\nlet germanyDate = new Intl.DateTimeFormat(\"de-DE\", options).formatToParts(date);\n\n// Extract date components\nlet year = germanyDate.find((p) => p.type === \"year\").value;\nlet month = germanyDate.find((p) => p.type === \"month\").value;\nlet day = germanyDate.find((p) => p.type === \"day\").value;\nlet hour = \"00\";\nlet minute = \"00\";\nlet second = \"00\";\n\n// Get the timezone offset dynamically for Berlin\nlet berlinTime = new Date().toLocaleString(\"en-US\", { timeZone: \"Europe/Berlin\", timeZoneName: \"longOffset\" });\n\n// Extract the offset from the formatted string (e.g., \"GMT+01:00\" or \"GMT+02:00\")\nlet offsetMatch = berlinTime.match(/GMT([+-]\\d{2}):(\\d{2})/);\n\nlet sign = \"+\";\nlet offsetHours = \"01\"; // Default to Germany's winter time (UTC+1)\nlet offsetMinutes = \"00\";\n\n// If match is found, extract the correct offset\nif (offsetMatch) {\n    sign = offsetMatch[1][0]; // + or -\n    offsetHours = offsetMatch[1].slice(1).padStart(2, '0'); // 01 or 02\n    offsetMinutes = offsetMatch[2].padStart(2, '0'); // 00\n}\n\n// Construct Berlin time in ISO format\nlet startDate = `${year}-${month}-${day}T${hour}:${minute}:${second}${sign}${offsetHours}:${offsetMinutes}`;\n\n// Calculate end date (48h after start date)\nlet startDateObj = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);\nstartDateObj.setHours(startDateObj.getHours() + 48); // Add 48 hours\n\n// Extract the new end date components\nlet endYear = startDateObj.getFullYear();\nlet endMonth = String(startDateObj.getMonth() + 1).padStart(2, '0'); // Months are 0-based\nlet endDay = String(startDateObj.getDate()).padStart(2, '0');\n\n// Construct end date in ISO format\nlet endDate = `${endYear}-${endMonth}-${endDay}T${hour}:${minute}:${second}${sign}${offsetHours}:${offsetMinutes}`;\n\n// URL encode the datetime strings\nmsg.start_datetime = encodeURIComponent(startDate);\nmsg.end_datetime = encodeURIComponent(endDate);\nmsg.utcdate_start = startDate;\nmsg.utcdate_end = endDate;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 740,
+        "wires": [
+            [
+                "5d88ef9680d42093",
+                "982909bae686458e"
+            ]
+        ]
+    },
+    {
+        "id": "5d88ef9680d42093",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "Start & Endtime",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "dd7e494b57590c5b",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "price adjusted from eos",
+        "func": "msg.payload = msg.payload.map(p => p * 1.1894 - 0.00003778);\nmsg.topic = \"strompreis\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1610,
+        "y": 1060,
+        "wires": [
+            [
+                "0dcd1771a41460a2",
+                "e4b7fa2f4b0be015",
+                "d633320e320bf056"
+            ]
+        ]
+    },
+    {
+        "id": "0dcd1771a41460a2",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "price adjusted from eos",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1610,
+        "y": 1100,
+        "wires": []
+    },
+    {
+        "id": "705cf3fac8e3b43b",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "Prepare Payload for PV",
+        "func": "msg.query = `\nfrom(bucket: \"pvforecast\")\n  |> range(start: ${msg.utcdate_start}, stop: ${msg.utcdate_end})\n  |> filter(fn: (r) => r[\"_measurement\"] == \"solcast-HuetteOst\" or r[\"_measurement\"] == \"solcast-SüdWest\")\n  |> filter(fn: (r) => r[\"_field\"] == \"pv_estimate\")\n  |> group(columns: [\"_time\", \"pv_estimate\"])\n  |> sum()\n  |> group(columns: [\"pv_estimate\"])\n  |> sort(columns: [\"_time\"])\n  |> aggregateWindow(every: 1h, fn: last, createEmpty: false)\n  |> yield(name: \"mean\")\n`;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1030,
+        "y": 860,
+        "wires": [
+            [
+                "b02a6d33f9efea02",
+                "d0a1955a8248868f"
+            ]
+        ]
+    },
+    {
+        "id": "d0a1955a8248868f",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "Read PV-Forecast from db",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1280,
+        "y": 900,
+        "wires": []
     }
 ]
