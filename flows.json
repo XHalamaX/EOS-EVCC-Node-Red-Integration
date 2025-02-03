@@ -10,8 +10,129 @@
                 "name": "EOS_URL",
                 "value": "http://<<<<ip-replace>>>>:8503",
                 "type": "str"
+            },
+            {
+                "name": "EVCC_URL",
+                "value": "http://<<<<ip-replace>>>>:7070",
+                "type": "str"
+            },
+            {
+                "name": "TELEGRAMM_CHAT_ID",
+                "value": "<<<<telegram-chat-id-replace>>>>",
+                "type": "str"
+            },
+            {
+                "name": "TELEGRAMM_TOKEN",
+                "value": "<<<<telegram-token-replace>>>>",
+                "type": "str"
+            },
+            {
+                "name": "WRITE_LOG",
+                "value": "false",
+                "type": "bool"
+            },
+            {
+                "name": "EVCC_INTEGRATION",
+                "value": "false",
+                "type": "bool"
             }
         ]
+    },
+    {
+        "id": "65c419964f9abf2b",
+        "type": "group",
+        "z": "57aed979d45b94dc",
+        "style": {
+            "stroke": "#2e333a",
+            "stroke-opacity": "1",
+            "fill": "#383c45",
+            "fill-opacity": "0.5",
+            "label": true,
+            "label-position": "nw",
+            "color": "#dddddd"
+        },
+        "nodes": [
+            "701b3d9437f44896",
+            "3b3ee7e54f895753",
+            "72aa6d9c085b25d0",
+            "a5bbca8a43a7a670",
+            "e10fce20db2ac40e",
+            "81d066aae4a59b8b",
+            "a295e864966c55f9",
+            "459941ca88d6be36",
+            "65bc11651d1037a5",
+            "6c90359c2dae7155",
+            "42700c198935b2ef",
+            "e6fa97394cc4e234",
+            "b5d79c775a47752e",
+            "1144697e5437a933",
+            "35c040be495e3d28",
+            "d3adfdba1af34114",
+            "8aabc69be64044bb",
+            "3f0ceb9315de5755",
+            "a16ea712e04a5308",
+            "8c1d948291a0bc1a",
+            "dd6ed0c361cf43a6",
+            "389e477cb7e21ec4",
+            "6a0314c5192ecdbe",
+            "03386f83c1915e5b",
+            "86f59b7e173d4e30",
+            "5fada11cd2b3688a",
+            "dfd0ecac1cfadf18",
+            "c6f4de0677bbd696",
+            "756bbaa3694bb1d6",
+            "52d1bb599b3145a6",
+            "fe7dcb5831d6a08d",
+            "37a692d49bf892f4",
+            "d66f606f09b0f8a6",
+            "212172b321930204",
+            "6fdb08c447a95340",
+            "93ed04874f5ce16b",
+            "13e83e16774bf495",
+            "56cd0346c0a04db9",
+            "3eb7721fc61b939a",
+            "8024bbd8d9d202f9",
+            "9164edc6896a640e",
+            "c27704ef204d8129",
+            "d24caaa77c666ff3"
+        ],
+        "x": 14,
+        "y": 1539,
+        "w": 3492,
+        "h": 542
+    },
+    {
+        "id": "74a1f077fc90d736",
+        "type": "group",
+        "z": "57aed979d45b94dc",
+        "style": {
+            "stroke": "#2e333a",
+            "stroke-opacity": "1",
+            "fill": "#383c45",
+            "fill-opacity": "0.5",
+            "label": true,
+            "label-position": "nw",
+            "color": "#dddddd"
+        },
+        "nodes": [
+            "bfdd4390e7c51cef",
+            "52643d1d8714d92c",
+            "41c40ad4fcb02c6f",
+            "6e540a190f895a7a",
+            "e4b00e97b187fb86",
+            "29d7c9fde0096bea",
+            "94c13bbff795a950",
+            "40a9f607cb3e7a13",
+            "52371c2db150b576",
+            "777632b8252c52a8",
+            "8af26d7358f3e714",
+            "f3e89d79068285ad",
+            "7042387b37ebb8a6"
+        ],
+        "x": 2914,
+        "y": 559,
+        "w": 1172,
+        "h": 262
     },
     {
         "id": "c6d7c27cb63b9301",
@@ -49,7 +170,8 @@
         "wires": [
             [
                 "a53e7fcf06c23df8",
-                "d633320e320bf056"
+                "d633320e320bf056",
+                "bfdd4390e7c51cef"
             ]
         ]
     },
@@ -58,7 +180,7 @@
         "type": "function",
         "z": "57aed979d45b94dc",
         "name": "function rule them all",
-        "func": "context.data = context.data || {};\nswitch (msg.topic) {\n    case \"soc\": \n        context.data.soc = msg.payload;\n        return null;\n    case \"strompreis\":\n        //context.data.strompreis = msg.payload.map(p => p / 100); // Convert to euro/Wh\n        context.data.strompreis = msg.payload;\n        return null;        \n    case \"gesamtlast\":\n        context.data.gesamtlast = msg.payload.map(p => p * 1);; // Example multiplier for conversion\n        return null;               \n    case \"pv_forecast\":\n        //context.data.temperature_forecast = msg.payload.map(t => t + 18); // Example adjustment for temperatures\n        context.data.pv_forecast = msg.payload.map(v => v * 1000); // Convert to Wh\n        return null;                \n    case \"temperature_forecast\":\n        context.data.temperature_forecast = msg.payload;\n        return null; \n    case \"soc_tesla\":\n        context.data.soc_tesla = msg.payload;\n        return null;\n    case \"akku_preis\":\n        context.data.akku_preis = parseFloat(msg.payload);\n        return null;          \n    case \"eauto_soc_ui\":\n        context.data.eauto_soc_ui = parseFloat(msg.payload);\n        return null;        \n    case \"pvpowernow\":\n        context.data.pvpowernow = parseFloat(msg.payload);\n        return null;                \n    case \"solution\":\n        context.data.start_solution = msg.payload.start_solution;\n        return null;           \n    case \"spuel\":\n        context.data.spuel = msg.payload;\n        return null;     \n    case \"spuel_onoff\":\n        context.data.spuel_onoff = msg.payload;\n        return null;                        \n    case \"go shorty\":\n        break;   \n    default:\n        return null; \n}\n\n// Defaults for missing data\nif (context.data.strompreis == null){\n    console.log(\"Missing price data\");\n    return null;\n}\n\nif (context.data.akku_preis == null)\n    context.data.akku_preis = 7.0;\n\nif (context.data.eauto_soc_ui == null)\n    context.data.eauto_soc_ui = 20.0;\n\nif (context.data.pvpowernow == null)\n    context.data.pvpowernow = null;\n\nif (context.data.start_solution == null)\n    context.data.start_solution = null; // Example default solution\n\nif (context.data.soc == null || context.data.soc_tesla == null || context.data.eauto_soc_ui == null) {\n    return msg;\n}\n\nmsg.payload = {\n    ems: {\n        preis_euro_pro_wh_akku: context.data.akku_preis * (0.01 / 100.0),\n        einspeiseverguetung_euro_pro_wh: 7 / (1000.0 * 100.0),\n        gesamtlast: context.data.gesamtlast,\n        pv_prognose_wh: context.data.pv_forecast,\n        strompreis_euro_pro_wh: context.data.strompreis\n    },\n    pv_akku: {\n        capacity_wh: 12000,\n        charging_efficiency: 0.92,\n        discharging_efficiency: 0.92,\n        max_charge_power_w: 5700,\n        initial_soc_percentage: context.data.soc,\n        min_soc_percentage: 5,\n        max_soc_percentage: 100\n    },\n    inverter: {\n        max_power_wh: 15500\n    },\n    eauto: {\n        capacity_wh: 64000,\n        charging_efficiency: 0.88,\n        discharging_efficiency: 0.88,\n        max_charge_power_w: 11040,\n        initial_soc_percentage: context.data.soc_tesla,\n        min_soc_percentage: context.data.eauto_soc_ui,\n        max_soc_percentage: 100\n    },\n    temperature_forecast: context.data.temperature_forecast,\n    start_solution: context.data.start_solution\n};\nreturn msg;\n",
+        "func": "context.data = context.data || {};\nswitch (msg.topic) {\n    case \"soc\": \n        context.data.soc = msg.payload;\n        return null;\n    case \"strompreis\":\n        //context.data.strompreis = msg.payload.map(p => p / 100); // Convert to euro/Wh\n        context.data.strompreis = msg.payload;\n        return null;        \n    case \"gesamtlast\":\n        context.data.gesamtlast = msg.payload.map(p => p * 1);; // Example multiplier for conversion\n        return null;               \n    case \"pv_forecast\":\n        //context.data.temperature_forecast = msg.payload.map(t => t + 18); // Example adjustment for temperatures\n        context.data.pv_forecast = msg.payload.map(v => v * 1000); // Convert to Wh\n        return null;                \n    case \"temperature_forecast\":\n        context.data.temperature_forecast = msg.payload;\n        return null; \n    case \"soc_tesla\":\n        context.data.soc_tesla = msg.payload;\n        return null;\n    case \"akku_preis\":\n        context.data.akku_preis = parseFloat(msg.payload);\n        return null;          \n    case \"eauto_soc_ui\":\n        context.data.eauto_soc_ui = parseFloat(msg.payload);\n        return null;        \n    case \"pvpowernow\":\n        context.data.pvpowernow = parseFloat(msg.payload);\n        return null;                \n    case \"solution\":\n        context.data.start_solution = msg.payload.start_solution;\n        return null;           \n    case \"spuel\":\n        context.data.spuel = msg.payload;\n        return null;     \n    case \"spuel_onoff\":\n        context.data.spuel_onoff = msg.payload;\n        return null;                        \n    case \"go shorty\":\n        break;   \n    default:\n        return null; \n}\n\n// Defaults for missing data\nif (context.data.strompreis == null){\n    console.log(\"Missing price data\");\n    return null;\n}\n\nif (context.data.akku_preis == null)\n    context.data.akku_preis = 8.0;\n\nif (context.data.eauto_soc_ui == null)\n    context.data.eauto_soc_ui = 20.0;\n\nif (context.data.pvpowernow == null)\n    context.data.pvpowernow = null;\n\nif (context.data.start_solution == null)\n    context.data.start_solution = null; // Example default solution\n\nif (context.data.soc == null || context.data.soc_tesla == null || context.data.eauto_soc_ui == null) {\n    return msg;\n}\n\nmsg.payload = {\n    ems: {\n        preis_euro_pro_wh_akku: context.data.akku_preis * (0.01 / 100.0),\n        einspeiseverguetung_euro_pro_wh: 7 / (1000.0 * 100.0),\n        gesamtlast: context.data.gesamtlast,\n        pv_prognose_wh: context.data.pv_forecast,\n        strompreis_euro_pro_wh: context.data.strompreis\n    },\n    pv_akku: {\n        capacity_wh: 12000,\n        charging_efficiency: 0.91,\n        discharging_efficiency: 0.91,\n        max_charge_power_w: 5700,\n        initial_soc_percentage: context.data.soc,\n        min_soc_percentage: 5,\n        max_soc_percentage: 100\n    },\n    inverter: {\n        max_power_wh: 15500\n    },\n    eauto: {\n        capacity_wh: 64000,\n        charging_efficiency: 0.88,\n        discharging_efficiency: 0.88,\n        max_charge_power_w: 11040,\n        initial_soc_percentage: context.data.soc_tesla,\n        min_soc_percentage: context.data.eauto_soc_ui,\n        max_soc_percentage: 100\n    },\n    temperature_forecast: context.data.temperature_forecast,\n    start_solution: context.data.start_solution\n};\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -576,6 +698,7 @@
         "id": "701b3d9437f44896",
         "type": "inject",
         "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
         "name": "Create plan for EVCC",
         "props": [
             {
@@ -586,18 +709,18 @@
                 "vt": "str"
             }
         ],
-        "repeat": "",
+        "repeat": "60",
         "crontab": "",
-        "once": false,
+        "once": true,
         "onceDelay": 0.1,
         "topic": "",
         "payload": "",
         "payloadType": "date",
-        "x": 120,
-        "y": 1480,
+        "x": 170,
+        "y": 1620,
         "wires": [
             [
-                "72aa6d9c085b25d0"
+                "d24caaa77c666ff3"
             ]
         ]
     },
@@ -605,53 +728,18 @@
         "id": "3b3ee7e54f895753",
         "type": "debug",
         "z": "57aed979d45b94dc",
-        "name": "debug 60",
-        "active": true,
+        "g": "65c419964f9abf2b",
+        "name": "EOS result from db",
+        "active": false,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
-        "complete": "false",
+        "complete": "payload",
+        "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 320,
-        "y": 1520,
-        "wires": []
-    },
-    {
-        "id": "20bbc91dcbfd389d",
-        "type": "function",
-        "z": "57aed979d45b94dc",
-        "name": "Create a Plan",
-        "func": "// Input payload\nconst inputPayload = msg.payload;\nconst outputPayload = [];\n\n// Helper function to create entries for each minute\nfunction createMinuteEntries(startTime, loadbattery,timeshift, minutes, casemessage) {\n    const entries = [];\n    const baseTime = new Date(startTime).getTime(); // Convert to milliseconds\n    for (let i = timeshift; i < (timeshift + minutes); i++) {\n        const timestamp = (baseTime +timeshift+ i * 60 * 1000); // Convert to nanoseconds\n        const loadValue = loadbattery;\n        entries.push({\n            measurement: \"1loadbattery1\",\n            fields: {\n                loadbattery: loadValue\n            },\n            tags: {\n                source: \"1loadbattery1\",\n                usedcase : casemessage\n            },\n            timestamp // Nanoseconds\n        });\n    }\n    return entries;\n}\n\n// Main processing loop\ninputPayload.forEach((entry, index) => {\n    const value = entry._value;\n    const startTime = entry._time;\n    const previousEntry = inputPayload[index - 1];\n    const nextEntry = inputPayload[index + 1];\n\n    if (value === 0) {\n        // Case: Value is 0\n        outputPayload.push(...createMinuteEntries(startTime, 0,0, 0,\"0\"));\n    } else if (value === 1) {\n        // Case: Value is 1\n        outputPayload.push(...createMinuteEntries(startTime, 1,0, 60,\"1\"));\n    } else {\n        // Case: Value is between 0 and 1\n        const minutestoload = Math.round(value * 60);\n        const prevIsOne = previousEntry && previousEntry._value > 0;\n        const nextIsOne = nextEntry && nextEntry._value > 0;\n\n        if (prevIsOne && nextIsOne) {\n            const dividedMinutes = Math.round(minutestoload / 2);\n            outputPayload.push(...createMinuteEntries(startTime, 1,0, dividedMinutes,\"a\"));\n            outputPayload.push(...createMinuteEntries(startTime, 0,dividedMinutes, 60 - minutestoload,\"a\"));\n            outputPayload.push(...createMinuteEntries(startTime, 1,dividedMinutes + 60 - minutestoload, dividedMinutes,\"a\"));\n        } else if (prevIsOne && (!nextIsOne || !nextEntry)) {\n            outputPayload.push(...createMinuteEntries(startTime, 1,0, minutestoload,\"b\"));\n            outputPayload.push(...createMinuteEntries(startTime, 0,minutestoload, 60 - minutestoload,\"b\"));\n        } else if ((!previousEntry || previousEntry._value === 0) && nextIsOne) {\n            outputPayload.push(...createMinuteEntries(startTime, 0,0, 60 - minutestoload,\"c\"));\n            outputPayload.push(...createMinuteEntries(startTime, 1, 60 - minutestoload, minutestoload,\"c\"));\n        } else if ((!prevIsOne && !nextIsOne)) {\n            const dividedMinutes = Math.round((60 - minutestoload) / 2);\n            outputPayload.push(...createMinuteEntries(startTime, 0,0, dividedMinutes,\"d\"));\n            outputPayload.push(...createMinuteEntries(startTime, 1,dividedMinutes, minutestoload,\"d\"));\n            outputPayload.push(...createMinuteEntries(startTime, 0,dividedMinutes+minutestoload, dividedMinutes,\"d\"));\n        }\n    }\n});\n\nmsg.payload = outputPayload;\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 660,
-        "y": 1480,
-        "wires": [
-            [
-                "2d8b5b186de98f21",
-                "efc57fab159f0dfb"
-            ]
-        ]
-    },
-    {
-        "id": "2d8b5b186de98f21",
-        "type": "debug",
-        "z": "57aed979d45b94dc",
-        "name": "debug 61",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 640,
-        "y": 1520,
+        "x": 530,
+        "y": 1700,
         "wires": []
     },
     {
@@ -670,7 +758,8 @@
         "y": 520,
         "wires": [
             [
-                "0908e1e8147a336e"
+                "0908e1e8147a336e",
+                "52643d1d8714d92c"
             ]
         ]
     },
@@ -678,10 +767,11 @@
         "id": "13e83e16774bf495",
         "type": "comment",
         "z": "57aed979d45b94dc",
-        "name": "IN PROGRESS - Prepare a plan for EVCC and write it in influxDB - IN PROGRESS",
-        "info": "",
-        "x": 450,
-        "y": 1440,
+        "g": "65c419964f9abf2b",
+        "name": "EVCC Integration",
+        "info": "To activate this flow, edit the environment variables.\n- double click on the flow name on the top left\n- click on the \"list\" icon below \"done\" and next to the settings icon",
+        "x": 120,
+        "y": 1580,
         "wires": []
     },
     {
@@ -768,7 +858,7 @@
         "id": "10c18fe6e30a2f18",
         "type": "http request",
         "z": "57aed979d45b94dc",
-        "name": "",
+        "name": "EOS Power Prediction",
         "method": "GET",
         "ret": "obj",
         "paytoqs": "ignore",
@@ -780,7 +870,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 1870,
+        "x": 1900,
         "y": 1160,
         "wires": [
             [
@@ -894,23 +984,6 @@
         "wires": []
     },
     {
-        "id": "efc57fab159f0dfb",
-        "type": "influxdb batch",
-        "z": "57aed979d45b94dc",
-        "influxdb": "c6d7c27cb63b9301",
-        "precision": "",
-        "retentionPolicy": "",
-        "name": "Write plan to InfluxDB",
-        "database": "database",
-        "precisionV18FluxV20": "ms",
-        "retentionPolicyV18Flux": "",
-        "org": "<<<<name-replace>>>>",
-        "bucket": "eos",
-        "x": 1020,
-        "y": 1480,
-        "wires": []
-    },
-    {
         "id": "b02a6d33f9efea02",
         "type": "influxdb in",
         "z": "57aed979d45b94dc",
@@ -1011,19 +1084,20 @@
         "id": "72aa6d9c085b25d0",
         "type": "influxdb in",
         "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
         "influxdb": "c6d7c27cb63b9301",
         "name": "Read EOS result from InfluxDB",
-        "query": "from(bucket: \"eos\")\n  |> range(start: -24h, stop: 48h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"ac_charge\")\n  |> yield(name: \"mean\")",
+        "query": "import \"math\"\n\nfrom(bucket: \"eos\")\n  |> range(start: -1h, stop: 0h)\n  |> aggregateWindow(every: 1h, fn: last, createEmpty: false)\n  |> yield(name: \"last\")\n\n\nfrom(bucket: \"evcc\")\n  |> range(start: -150h, stop: 0h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"vehicleSoc\")\n  |> filter(fn: (r) => r[\"_value\"] != 0)  // Filter out values where _value is 0\n  |> aggregateWindow(every: 30m, fn: last, createEmpty: false)\n  |> last()  // Selects the last value directly\n  |> map(fn: (r) => ({ r with _value: math.round(x: r._value) }))  // Round down the _value\n  |> yield(name: \"car_soc\")\n\nfrom(bucket: \"evcc\")\n  |> range(start: -10m, stop: 0m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"batterySoc\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> filter(fn: (r) => r[\"id\"] == \"1\")\n  |> last()  // Selects the last value directly\n  |> yield(name: \"home_soc\")",
         "rawOutput": false,
         "precision": "",
         "retentionPolicy": "",
         "org": "<<<<name-replace>>>>",
-        "x": 390,
-        "y": 1480,
+        "x": 570,
+        "y": 1660,
         "wires": [
             [
                 "3b3ee7e54f895753",
-                "20bbc91dcbfd389d"
+                "a5bbca8a43a7a670"
             ]
         ]
     },
@@ -1144,7 +1218,7 @@
         "z": "57aed979d45b94dc",
         "name": "Readme",
         "info": "# How to use this flow\n\n## Install dependencies\n 1. Click on the top right burger bar icon\n 2. Click on manage palette\n 3. Search for node-red-contrib-influxdb\n 4. Install\n\n## Configure InfluxDB settings\n 1. Double click on one influx db node\n 2. Adjust the InfluxDB settings\n\n\n## This Flow is using environment variables.\n- double click on the flow name on the top left\n- click on the \"list\" icon below \"done\" and next to the settings icon\n- change IP and port\n\n## Write to InfluxDB\nThis flow writes data to influx db and expects a eos bucket",
-        "x": 420,
+        "x": 380,
         "y": 400,
         "wires": []
     },
@@ -1153,7 +1227,7 @@
         "type": "comment",
         "z": "57aed979d45b94dc",
         "name": "ToDo List",
-        "info": "- Replace PV-Forecast nodes with https://akkudoktor-eos.readthedocs.io/en/latest/akkudoktoreos/prediction.html#pv-power-prediction\n- Add error handling and logging\n- Use variables in read influx DB nodes (bucket_names)\n- Use variables in write influx DB nodes\n- Add EVCC Integration\n-\n",
+        "info": "## PV-Forecast \nReplace PV-Forecast nodes with https://akkudoktor-eos.readthedocs.io/en/latest/akkudoktoreos/prediction.html#pv-power-prediction\nBut waiting for https://github.com/Akkudoktor-EOS/EOS/issues/432\n\n\n## Add error handling\nErrors could be handled much better\n\n## InfluxDB config\n- Use variables in read influx DB nodes (bucket_names)\n- Use variables in write influx DB nodes\n\n## EOS Power Prediction\nCurrently we use load_mean because of https://github.com/Akkudoktor-EOS/EOS/issues/428\n\n\n# DONE\nlogging of request and respone messages can be activated\n",
         "x": 640,
         "y": 400,
         "wires": []
@@ -1480,6 +1554,1261 @@
         "statusType": "auto",
         "x": 1280,
         "y": 900,
+        "wires": []
+    },
+    {
+        "id": "a5bbca8a43a7a670",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "EOS-Logic",
+        "func": "// Get the payload\nlet payload = msg.payload;\n\n// Initialize variables\nlet ac_charge = 0;\nlet home_soc = 0;\nlet akku_soc_pro_stunde = 0;\nlet discharge_allowed = 1;\n\n// Extract values from payload\nfor (let i = 0; i < payload.length; i++) {\n    let item = payload[i];\n    switch(item._measurement) {\n        case \"ac_charge\":\n            ac_charge = item._value;\n            break;\n        case \"batterySoc\":\n            home_soc = item._value;\n            break;\n        case \"akku_soc_pro_stunde\":\n            akku_soc_pro_stunde = item._value;\n            break;\n        case \"discharge_allowed\":\n            discharge_allowed = item._value;\n            break;\n    }\n}\n\n// Implement the logic\nif (ac_charge > 0 && home_soc < akku_soc_pro_stunde) {\n    msg.limit = 99;\n    msg.grid_charge_text = \"Activate grid charge\";\n}\nelse{\n    msg.limit = null;\n    msg.grid_charge_text = \"Dectivate grid charge\";\n}\n\n// Implement the logic\nif (discharge_allowed == 1) {\n    msg.eos_load_status = \"pv\";\n    msg.discharge_allowed_text = \"Allow discharge\";\n}\nelse{\n    msg.eos_load_status = \"now\";\n    msg.discharge_allowed_text = \"Block discharge\";\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 1740,
+        "wires": [
+            [
+                "e10fce20db2ac40e",
+                "56cd0346c0a04db9"
+            ]
+        ]
+    },
+    {
+        "id": "e10fce20db2ac40e",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "EOS Rule Result",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 530,
+        "y": 1780,
+        "wires": []
+    },
+    {
+        "id": "81d066aae4a59b8b",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "eos_load_status",
+        "property": "eos_load_status",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nnull"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1830,
+        "y": 1880,
+        "wires": [
+            [
+                "65bc11651d1037a5",
+                "86f59b7e173d4e30"
+            ]
+        ]
+    },
+    {
+        "id": "a295e864966c55f9",
+        "type": "http request",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "{{{evcc_url}}}/api/loadpoints/2/mode/{{{eos_load_status}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 2310,
+        "y": 1880,
+        "wires": [
+            [
+                "6c90359c2dae7155",
+                "a16ea712e04a5308"
+            ]
+        ]
+    },
+    {
+        "id": "459941ca88d6be36",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "Set chat_id & URL",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 690,
+        "y": 1940,
+        "wires": []
+    },
+    {
+        "id": "65bc11651d1037a5",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "eos_load_status",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1830,
+        "y": 1920,
+        "wires": []
+    },
+    {
+        "id": "6c90359c2dae7155",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "DischargeAllow Response",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2350,
+        "y": 1920,
+        "wires": []
+    },
+    {
+        "id": "42700c198935b2ef",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "property": "limit",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nnull"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1770,
+        "y": 1740,
+        "wires": [
+            [
+                "37a692d49bf892f4"
+            ]
+        ]
+    },
+    {
+        "id": "e6fa97394cc4e234",
+        "type": "http request",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "{{{evcc_url}}}/api/batterygridchargelimit/{{{limit}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 2190,
+        "y": 1740,
+        "wires": [
+            [
+                "b5d79c775a47752e",
+                "3f0ceb9315de5755"
+            ]
+        ]
+    },
+    {
+        "id": "b5d79c775a47752e",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "batterygridchargelimit response - set",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2270,
+        "y": 1780,
+        "wires": []
+    },
+    {
+        "id": "1144697e5437a933",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "property": "limit",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "null"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1770,
+        "y": 1680,
+        "wires": [
+            [
+                "fe7dcb5831d6a08d"
+            ]
+        ]
+    },
+    {
+        "id": "35c040be495e3d28",
+        "type": "http request",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "method": "DELETE",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "{{{evcc_url}}}/api/batterygridchargelimit",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 2190,
+        "y": 1640,
+        "wires": [
+            [
+                "d3adfdba1af34114",
+                "3f0ceb9315de5755"
+            ]
+        ]
+    },
+    {
+        "id": "d3adfdba1af34114",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "batterygridchargelimit response - delete",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2280,
+        "y": 1680,
+        "wires": []
+    },
+    {
+        "id": "8aabc69be64044bb",
+        "type": "http request",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "body",
+        "url": "https://api.telegram.org/bot{{{telegramm_token}}}/sendMessage",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [
+            {
+                "keyType": "other",
+                "keyValue": "Content-Type",
+                "valueType": "other",
+                "valueValue": " application/json"
+            }
+        ],
+        "x": 3230,
+        "y": 1700,
+        "wires": [
+            [
+                "389e477cb7e21ec4"
+            ]
+        ]
+    },
+    {
+        "id": "3f0ceb9315de5755",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "text",
+                "pt": "msg",
+                "to": "grid_charge_text",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2570,
+        "y": 1700,
+        "wires": [
+            [
+                "8c1d948291a0bc1a"
+            ]
+        ]
+    },
+    {
+        "id": "a16ea712e04a5308",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "text",
+                "pt": "msg",
+                "to": "discharge_allowed_text",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2510,
+        "y": 1880,
+        "wires": [
+            [
+                "8c1d948291a0bc1a"
+            ]
+        ]
+    },
+    {
+        "id": "8c1d948291a0bc1a",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "payload",
+                "pt": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "topic",
+                "pt": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "_msgid",
+                "pt": "msg"
+            },
+            {
+                "t": "delete",
+                "p": "evcc_url",
+                "pt": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload.text",
+                "pt": "msg",
+                "to": "text",
+                "tot": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload.chat_id",
+                "pt": "msg",
+                "to": "chat_id",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2760,
+        "y": 1700,
+        "wires": [
+            [
+                "dd6ed0c361cf43a6",
+                "3eb7721fc61b939a"
+            ]
+        ]
+    },
+    {
+        "id": "dd6ed0c361cf43a6",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "debug 7",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2740,
+        "y": 1740,
+        "wires": []
+    },
+    {
+        "id": "389e477cb7e21ec4",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "debug 8",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3400,
+        "y": 1700,
+        "wires": []
+    },
+    {
+        "id": "6a0314c5192ecdbe",
+        "type": "http request",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "{{{evcc_url}}}/api/state",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 910,
+        "y": 1920,
+        "wires": [
+            [
+                "03386f83c1915e5b",
+                "756bbaa3694bb1d6"
+            ]
+        ]
+    },
+    {
+        "id": "03386f83c1915e5b",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "EVCC Status",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 910,
+        "y": 1960,
+        "wires": []
+    },
+    {
+        "id": "86f59b7e173d4e30",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "property": "payload.evcc.result.loadpoints[1].mode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "eos_load_status",
+                "vt": "msg"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 2090,
+        "y": 1880,
+        "wires": [
+            [
+                "5fada11cd2b3688a",
+                "a295e864966c55f9"
+            ]
+        ]
+    },
+    {
+        "id": "5fada11cd2b3688a",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "debug 10",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2100,
+        "y": 1920,
+        "wires": []
+    },
+    {
+        "id": "dfd0ecac1cfadf18",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "EOS & EVCC joined",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1340,
+        "y": 1920,
+        "wires": []
+    },
+    {
+        "id": "c6f4de0677bbd696",
+        "type": "join",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1290,
+        "y": 1880,
+        "wires": [
+            [
+                "dfd0ecac1cfadf18",
+                "d66f606f09b0f8a6"
+            ]
+        ]
+    },
+    {
+        "id": "756bbaa3694bb1d6",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "evcc",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1110,
+        "y": 1920,
+        "wires": [
+            [
+                "c6f4de0677bbd696"
+            ]
+        ]
+    },
+    {
+        "id": "52d1bb599b3145a6",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "origin",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 910,
+        "y": 1880,
+        "wires": [
+            [
+                "c6f4de0677bbd696"
+            ]
+        ]
+    },
+    {
+        "id": "fe7dcb5831d6a08d",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "property": "payload.evcc.result.loadpoints[1].smartCostLimit",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "limit",
+                "vt": "msg"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1910,
+        "y": 1680,
+        "wires": [
+            [
+                "35c040be495e3d28"
+            ]
+        ]
+    },
+    {
+        "id": "37a692d49bf892f4",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "property": "payload.evcc.result.loadpoints[1].smartCostLimit",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "limit",
+                "vt": "msg"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1910,
+        "y": 1740,
+        "wires": [
+            [
+                "e6fa97394cc4e234"
+            ]
+        ]
+    },
+    {
+        "id": "d66f606f09b0f8a6",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "property": "payload.evcc.result.loadpoints[1].mode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "off",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "off",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1590,
+        "y": 1880,
+        "wires": [
+            [
+                "1144697e5437a933",
+                "42700c198935b2ef",
+                "81d066aae4a59b8b",
+                "212172b321930204"
+            ],
+            [
+                "93ed04874f5ce16b"
+            ]
+        ]
+    },
+    {
+        "id": "212172b321930204",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1560,
+        "y": 1840,
+        "wires": []
+    },
+    {
+        "id": "6fdb08c447a95340",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1740,
+        "y": 2040,
+        "wires": []
+    },
+    {
+        "id": "93ed04874f5ce16b",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "rules": [
+            {
+                "t": "delete",
+                "p": "payload",
+                "pt": "msg"
+            },
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "automation_deactivated",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1760,
+        "y": 2000,
+        "wires": [
+            [
+                "6fdb08c447a95340"
+            ]
+        ]
+    },
+    {
+        "id": "bfdd4390e7c51cef",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "debug",
+                "pt": "msg",
+                "to": "eos_response",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 3020,
+        "y": 660,
+        "wires": [
+            [
+                "41c40ad4fcb02c6f"
+            ]
+        ]
+    },
+    {
+        "id": "52643d1d8714d92c",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "debug",
+                "pt": "msg",
+                "to": "eos_request",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 3020,
+        "y": 700,
+        "wires": [
+            [
+                "41c40ad4fcb02c6f"
+            ]
+        ]
+    },
+    {
+        "id": "41c40ad4fcb02c6f",
+        "type": "join",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "",
+        "mode": "custom",
+        "build": "object",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "debug",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "useparts": false,
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 3210,
+        "y": 680,
+        "wires": [
+            [
+                "6e540a190f895a7a",
+                "f3e89d79068285ad"
+            ]
+        ]
+    },
+    {
+        "id": "6e540a190f895a7a",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "Debug-Joined-Messages",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3270,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "e4b00e97b187fb86",
+        "type": "file",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "",
+        "filename": "filename",
+        "filenameType": "msg",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 4000,
+        "y": 740,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "29d7c9fde0096bea",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "Prepare success file path",
+        "func": "let date = new Date()\n\n// Set time to 00:00 in Germany timezone\nlet options = {\n    timeZone: \"Europe/Berlin\",\n    year: \"numeric\",\n    month: \"2-digit\",\n    day: \"2-digit\",\n    hour: \"2-digit\",\n    minute: \"2-digit\",\n    second: \"2-digit\",\n    hourCycle: \"h23\"\n};\n\nlet formattedTime = new Intl.DateTimeFormat(\"de-DE\", options).formatToParts(date);\n\nlet year = formattedTime.find((p) => p.type === \"year\").value;\nlet month = formattedTime.find((p) => p.type === \"month\").value;\nlet day = formattedTime.find((p) => p.type === \"day\").value;\nlet hour = formattedTime.find((p) => p.type === \"hour\").value;\nlet minute = formattedTime.find((p) => p.type === \"minute\").value;\nlet second = formattedTime.find((p) => p.type === \"second\").value;\n\nmsg.filename = \"/var/log/eos/success/\" + year + \"-\" + month + \"-\" + day + \"_\" + hour + \"-\" + minute + \"-\" + second + \".json\";\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3790,
+        "y": 620,
+        "wires": [
+            [
+                "40a9f607cb3e7a13",
+                "52371c2db150b576"
+            ]
+        ]
+    },
+    {
+        "id": "94c13bbff795a950",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "",
+        "property": "payload.eos_response",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "istype",
+                "v": "object",
+                "vt": "object"
+            },
+            {
+                "t": "cont",
+                "v": "Error",
+                "vt": "str"
+            }
+        ],
+        "checkall": "false",
+        "repair": false,
+        "outputs": 2,
+        "x": 3550,
+        "y": 680,
+        "wires": [
+            [
+                "29d7c9fde0096bea"
+            ],
+            [
+                "777632b8252c52a8"
+            ]
+        ]
+    },
+    {
+        "id": "40a9f607cb3e7a13",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "Debug-Success Payload",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3790,
+        "y": 660,
+        "wires": []
+    },
+    {
+        "id": "52371c2db150b576",
+        "type": "file",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "",
+        "filename": "filename",
+        "filenameType": "msg",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 4000,
+        "y": 620,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "777632b8252c52a8",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "Prepare error file path",
+        "func": "let date = new Date()\n\n// Set time to 00:00 in Germany timezone\nlet options = {\n    timeZone: \"Europe/Berlin\",\n    year: \"numeric\",\n    month: \"2-digit\",\n    day: \"2-digit\",\n    hour: \"2-digit\",\n    minute: \"2-digit\",\n    second: \"2-digit\",\n    hourCycle: \"h23\"\n};\n\nlet formattedTime = new Intl.DateTimeFormat(\"de-DE\", options).formatToParts(date);\n\nlet year = formattedTime.find((p) => p.type === \"year\").value;\nlet month = formattedTime.find((p) => p.type === \"month\").value;\nlet day = formattedTime.find((p) => p.type === \"day\").value;\nlet hour = formattedTime.find((p) => p.type === \"hour\").value;\nlet minute = formattedTime.find((p) => p.type === \"minute\").value;\nlet second = formattedTime.find((p) => p.type === \"second\").value;\n\nmsg.filename = \"/var/log/eos/error/\" + year + \"-\" + month + \"-\" + day + \"_\" + hour + \"-\" + minute + \"-\" + second + \".json\";\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3780,
+        "y": 740,
+        "wires": [
+            [
+                "8af26d7358f3e714",
+                "e4b00e97b187fb86"
+            ]
+        ]
+    },
+    {
+        "id": "8af26d7358f3e714",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "Debug-Error Payload",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3780,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "56cd0346c0a04db9",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "evcc_url",
+                "pt": "msg",
+                "to": "EVCC_URL",
+                "tot": "env",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 690,
+        "y": 1900,
+        "wires": [
+            [
+                "459941ca88d6be36",
+                "52d1bb599b3145a6",
+                "6a0314c5192ecdbe"
+            ]
+        ]
+    },
+    {
+        "id": "3eb7721fc61b939a",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload.chat_id",
+                "pt": "msg",
+                "to": "TELEGRAMM_CHAT_ID",
+                "tot": "env",
+                "dc": true
+            },
+            {
+                "t": "set",
+                "p": "telegramm_token",
+                "pt": "msg",
+                "to": "TELEGRAMM_TOKEN",
+                "tot": "env",
+                "dc": true
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 3000,
+        "y": 1700,
+        "wires": [
+            [
+                "9164edc6896a640e",
+                "8aabc69be64044bb"
+            ]
+        ]
+    },
+    {
+        "id": "8024bbd8d9d202f9",
+        "type": "inject",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "Send Testmessage",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "payload.text",
+                "v": "Testmessage",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 2750,
+        "y": 1660,
+        "wires": [
+            [
+                "3eb7721fc61b939a"
+            ]
+        ]
+    },
+    {
+        "id": "9164edc6896a640e",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "debug 12",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 3000,
+        "y": 1660,
+        "wires": []
+    },
+    {
+        "id": "c27704ef204d8129",
+        "type": "comment",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "Loadpoints",
+        "info": "The nodes expect the dummy node with ID=2",
+        "x": 2300,
+        "y": 1840,
+        "wires": []
+    },
+    {
+        "id": "f3e89d79068285ad",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "",
+        "property": "WRITE_LOG",
+        "propertyType": "env",
+        "rules": [
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 3390,
+        "y": 680,
+        "wires": [
+            [
+                "94c13bbff795a950"
+            ]
+        ]
+    },
+    {
+        "id": "d24caaa77c666ff3",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 370,
+        "y": 1620,
+        "wires": [
+            [
+                "72aa6d9c085b25d0"
+            ]
+        ]
+    },
+    {
+        "id": "7042387b37ebb8a6",
+        "type": "comment",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "Write Request & Response to file",
+        "info": "",
+        "x": 3070,
+        "y": 600,
         "wires": []
     }
 ]
