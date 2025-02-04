@@ -98,7 +98,7 @@
         ],
         "x": 14,
         "y": 1539,
-        "w": 3492,
+        "w": 3632,
         "h": 542
     },
     {
@@ -150,6 +150,44 @@
         "rejectUnauthorized": false
     },
     {
+        "id": "2",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "Transform power from db",
+        "func": "// Access the array from msg.payload\nlet dataArray = msg.payload;\n\n// Define the result object\nlet result = {\n    start_datetime: dataArray[0]._time.replace(\"T\", \" \").replace(\"Z\", \"\"), // Take start from the first item\n    interval: \"1 hour\",\n    measurement_load0_mr: [] // Initialize an empty array for values\n};\n\n// Iterate through the data array and extract _value as integers\ndataArray.forEach(item => {\n    if (item._value !== undefined) {\n        result.measurement_load0_mr.push(Math.round(item._value)); // Round the value to nearest integer\n        //result.measurement_load0_mr.push(item._value); // Round the value to nearest integer\n    }\n});\n\n// Assign the result object back to msg.payload\nmsg.payload = result;\n\n// Return the modified message\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1310,
+        "y": 1160,
+        "wires": [
+            [
+                "3",
+                "b956fa4fe3ac2cd2"
+            ]
+        ]
+    },
+    {
+        "id": "3",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "name": "power from db - transformed",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1320,
+        "y": 1200,
+        "wires": []
+    },
+    {
         "id": "0908e1e8147a336e",
         "type": "http request",
         "z": "57aed979d45b94dc",
@@ -180,7 +218,7 @@
         "type": "function",
         "z": "57aed979d45b94dc",
         "name": "function rule them all",
-        "func": "context.data = context.data || {};\nswitch (msg.topic) {\n    case \"soc\": \n        context.data.soc = msg.payload;\n        return null;\n    case \"strompreis\":\n        //context.data.strompreis = msg.payload.map(p => p / 100); // Convert to euro/Wh\n        context.data.strompreis = msg.payload;\n        return null;        \n    case \"gesamtlast\":\n        context.data.gesamtlast = msg.payload.map(p => p * 1);; // Example multiplier for conversion\n        return null;               \n    case \"pv_forecast\":\n        //context.data.temperature_forecast = msg.payload.map(t => t + 18); // Example adjustment for temperatures\n        context.data.pv_forecast = msg.payload.map(v => v * 1000); // Convert to Wh\n        return null;                \n    case \"temperature_forecast\":\n        context.data.temperature_forecast = msg.payload;\n        return null; \n    case \"soc_tesla\":\n        context.data.soc_tesla = msg.payload;\n        return null;\n    case \"akku_preis\":\n        context.data.akku_preis = parseFloat(msg.payload);\n        return null;          \n    case \"eauto_soc_ui\":\n        context.data.eauto_soc_ui = parseFloat(msg.payload);\n        return null;        \n    case \"pvpowernow\":\n        context.data.pvpowernow = parseFloat(msg.payload);\n        return null;                \n    case \"solution\":\n        context.data.start_solution = msg.payload.start_solution;\n        return null;           \n    case \"spuel\":\n        context.data.spuel = msg.payload;\n        return null;     \n    case \"spuel_onoff\":\n        context.data.spuel_onoff = msg.payload;\n        return null;                        \n    case \"go shorty\":\n        break;   \n    default:\n        return null; \n}\n\n// Defaults for missing data\nif (context.data.strompreis == null){\n    console.log(\"Missing price data\");\n    return null;\n}\n\nif (context.data.akku_preis == null)\n    context.data.akku_preis = 8.0;\n\nif (context.data.eauto_soc_ui == null)\n    context.data.eauto_soc_ui = 20.0;\n\nif (context.data.pvpowernow == null)\n    context.data.pvpowernow = null;\n\nif (context.data.start_solution == null)\n    context.data.start_solution = null; // Example default solution\n\nif (context.data.soc == null || context.data.soc_tesla == null || context.data.eauto_soc_ui == null) {\n    return msg;\n}\n\nmsg.payload = {\n    ems: {\n        preis_euro_pro_wh_akku: context.data.akku_preis * (0.01 / 100.0),\n        einspeiseverguetung_euro_pro_wh: 7 / (1000.0 * 100.0),\n        gesamtlast: context.data.gesamtlast,\n        pv_prognose_wh: context.data.pv_forecast,\n        strompreis_euro_pro_wh: context.data.strompreis\n    },\n    pv_akku: {\n        capacity_wh: 12000,\n        charging_efficiency: 0.91,\n        discharging_efficiency: 0.91,\n        max_charge_power_w: 5700,\n        initial_soc_percentage: context.data.soc,\n        min_soc_percentage: 5,\n        max_soc_percentage: 100\n    },\n    inverter: {\n        max_power_wh: 15500\n    },\n    eauto: {\n        capacity_wh: 64000,\n        charging_efficiency: 0.88,\n        discharging_efficiency: 0.88,\n        max_charge_power_w: 11040,\n        initial_soc_percentage: context.data.soc_tesla,\n        min_soc_percentage: context.data.eauto_soc_ui,\n        max_soc_percentage: 100\n    },\n    temperature_forecast: context.data.temperature_forecast,\n    start_solution: context.data.start_solution\n};\nreturn msg;\n",
+        "func": "context.data = context.data || {};\nswitch (msg.topic) {\n    case \"soc\": \n        context.data.soc = msg.payload;\n        return null;\n    case \"strompreis\":\n        //context.data.strompreis = msg.payload.map(p => p / 100); // Convert to euro/Wh\n        context.data.strompreis = msg.payload;\n        return null;        \n    case \"gesamtlast\":\n        context.data.gesamtlast = msg.payload.map(p => p * 1);; // Example multiplier for conversion\n        return null;               \n    case \"pv_forecast\":\n        //context.data.temperature_forecast = msg.payload.map(t => t + 18); // Example adjustment for temperatures\n        context.data.pv_forecast = msg.payload.map(v => v * 1000); // Convert to Wh\n        return null;                \n    case \"temperature_forecast\":\n        context.data.temperature_forecast = msg.payload;\n        return null; \n    case \"soc_tesla\":\n        context.data.soc_tesla = msg.payload;\n        return null;\n    case \"akku_preis\":\n        context.data.akku_preis = parseFloat(msg.payload);\n        return null;          \n    case \"eauto_soc_ui\":\n        context.data.eauto_soc_ui = parseFloat(msg.payload);\n        return null;        \n    case \"pvpowernow\":\n        context.data.pvpowernow = parseFloat(msg.payload);\n        return null;                \n    case \"solution\":\n        context.data.start_solution = msg.payload.start_solution;\n        return null;           \n    case \"spuel\":\n        context.data.spuel = msg.payload;\n        return null;     \n    case \"spuel_onoff\":\n        context.data.spuel_onoff = msg.payload;\n        return null;                        \n    case \"go shorty\":\n        break;   \n    default:\n        return null; \n}\n\n// Defaults for missing data\nif (context.data.strompreis == null){\n    console.log(\"Missing price data\");\n    return null;\n}\n\nif (context.data.akku_preis == null)\n    context.data.akku_preis = 7.0;\n\nif (context.data.eauto_soc_ui == null)\n    context.data.eauto_soc_ui = 20.0;\n\nif (context.data.pvpowernow == null)\n    context.data.pvpowernow = null;\n\nif (context.data.start_solution == null)\n    context.data.start_solution = null; // Example default solution\n\nif (context.data.soc == null || context.data.soc_tesla == null || context.data.eauto_soc_ui == null) {\n    return msg;\n}\n\nmsg.payload = {\n    ems: {\n        preis_euro_pro_wh_akku: context.data.akku_preis * (0.01 / 100.0),\n        einspeiseverguetung_euro_pro_wh: 7 / (1000.0 * 100.0),\n        gesamtlast: context.data.gesamtlast,\n        pv_prognose_wh: context.data.pv_forecast,\n        strompreis_euro_pro_wh: context.data.strompreis\n    },\n    pv_akku: {\n        capacity_wh: 12000,\n        charging_efficiency: 0.90,\n        discharging_efficiency: 0.95,\n        max_charge_power_w: 5700,\n        initial_soc_percentage: context.data.soc,\n        min_soc_percentage: 5,\n        max_soc_percentage: 100\n    },\n    inverter: {\n        max_power_wh: 15500\n    },\n    eauto: {\n        capacity_wh: 64000,\n        charging_efficiency: 0.88,\n        discharging_efficiency: 0.88,\n        max_charge_power_w: 11040,\n        initial_soc_percentage: context.data.soc_tesla,\n        min_soc_percentage: context.data.eauto_soc_ui,\n        max_soc_percentage: 100\n    },\n    temperature_forecast: context.data.temperature_forecast,\n    start_solution: context.data.start_solution\n};\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -242,7 +280,7 @@
         ],
         "repeat": "3600",
         "crontab": "",
-        "once": true,
+        "once": false,
         "onceDelay": "5",
         "topic": "",
         "payload": "true",
@@ -535,7 +573,7 @@
         "type": "function",
         "z": "57aed979d45b94dc",
         "name": "Prepare Payload for InfluxDBv2",
-        "func": "let payload = [];\nlet tempArray = [];\n\n// Get the current time and round down to the nearest hour\nlet baseTime = new Date();\nbaseTime.setMinutes(0, 0, 0); // Set minutes, seconds, and milliseconds to 0\nlet label = \"\";\nif (msg.topic == \"go shorty\") {\n    label = \"ac_charge\";\n    tempArray = msg.payload.ac_charge;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                relative: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"discharge_allowed\";\n    tempArray = msg.payload.discharge_allowed;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                discharge_allowed: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"eautocharge_hours_float\";\n    tempArray = msg.payload.eautocharge_hours_float;\n\n    // If tempArray is null, initialize it as an array of 48 zeros\n    if (tempArray === null) {\n        tempArray = Array(48).fill(0);\n    }\n\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(i);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                eautocharge_hours_float: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"akku_soc_pro_stunde\";\n    tempArray = msg.payload.result.akku_soc_pro_stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                akku_soc_pro_stunde: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"EAuto_SoC_pro_Stunde\";\n    tempArray = msg.payload.result.EAuto_SoC_pro_Stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                EAuto_SoC_pro_Stunde: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"Last_Wh_pro_Stunde_optimized\";\n    tempArray = msg.payload.result.Last_Wh_pro_Stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                Last_Wh_pro_Stunde_optimized: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"gesamtlast\") {\n    label = \"Last_Wh_pro_Stunde_prognose\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n\n        payload.push({\n            measurement: label,\n            fields: {\n                Last_Wh_pro_Stunde_prognose: tempArray[i] * 1000\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"strompreis\") {\n    label = \"strompreis_prognose\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        //timestamp = timestamp.setHours((i));\n        //timestamp = new Date(timestamp);\n        timestamp.setHours((i));\n        payload.push({\n            measurement: label,\n            fields: {\n                strompreis_prognose: tempArray[i] * 1000\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\n\n// Set the new payload\nmsg.payload = payload;\nmsg.precision =\"ms\";\nreturn msg;\n",
+        "func": "let payload = [];\nlet tempArray = [];\n\n// Get the current time and round down to the nearest hour\nlet baseTime = new Date();\nbaseTime.setMinutes(0, 0, 0); // Set minutes, seconds, and milliseconds to 0\nlet label = \"\";\nif (msg.topic == \"go shorty\") {\n    label = \"ac_charge\";\n    tempArray = msg.payload.ac_charge;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                relative: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"discharge_allowed\";\n    tempArray = msg.payload.discharge_allowed;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                discharge_allowed: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"eautocharge_hours_float\";\n    tempArray = msg.payload.eautocharge_hours_float;\n\n    // If tempArray is null, initialize it as an array of 48 zeros\n    if (tempArray === null) {\n        tempArray = Array(48).fill(0);\n    }\n\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(i);\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                eautocharge_hours_float: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"akku_soc_pro_stunde\";\n    tempArray = msg.payload.result.akku_soc_pro_stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                akku_soc_pro_stunde: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"EAuto_SoC_pro_Stunde\";\n    tempArray = msg.payload.result.EAuto_SoC_pro_Stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                EAuto_SoC_pro_Stunde: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"Last_Wh_pro_Stunde_optimized\";\n    tempArray = msg.payload.result.Last_Wh_pro_Stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                Last_Wh_pro_Stunde_optimized: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"gesamtlast\") {\n    label = \"Last_Wh_pro_Stunde_prognose\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                Last_Wh_pro_Stunde_prognose: tempArray[i] * 1000\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"strompreis\") {\n    label = \"strompreis_prognose\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        //timestamp = timestamp.setHours((i));\n        //timestamp = new Date(timestamp);\n        timestamp.setHours((i));\n        timestamp.setHours(timestamp.getHours() - 1);\n        payload.push({\n            measurement: label,\n            fields: {\n                strompreis_prognose: tempArray[i] * 1000\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\n\n// Set the new payload\nmsg.payload = payload;\nmsg.precision =\"ms\";\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -772,44 +810,6 @@
         "info": "To activate this flow, edit the environment variables.\n- double click on the flow name on the top left\n- click on the \"list\" icon below \"done\" and next to the settings icon",
         "x": 120,
         "y": 1580,
-        "wires": []
-    },
-    {
-        "id": "2",
-        "type": "function",
-        "z": "57aed979d45b94dc",
-        "name": "Transform power from db",
-        "func": "// Access the array from msg.payload\nlet dataArray = msg.payload;\n\n// Define the result object\nlet result = {\n    start_datetime: dataArray[0]._time.replace(\"T\", \" \").replace(\"Z\", \"\"), // Take start from the first item\n    interval: \"1 hour\",\n    measurement_load0_mr: [] // Initialize an empty array for values\n};\n\n// Iterate through the data array and extract _value as integers\ndataArray.forEach(item => {\n    if (item._value !== undefined) {\n        result.measurement_load0_mr.push(Math.round(item._value)); // Round the value to nearest integer\n        //result.measurement_load0_mr.push(item._value); // Round the value to nearest integer\n    }\n});\n\n// Assign the result object back to msg.payload\nmsg.payload = result;\n\n// Return the modified message\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": "",
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 1310,
-        "y": 1160,
-        "wires": [
-            [
-                "3",
-                "b956fa4fe3ac2cd2"
-            ]
-        ]
-    },
-    {
-        "id": "3",
-        "type": "debug",
-        "z": "57aed979d45b94dc",
-        "name": "power from db - transformed",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "true",
-        "targetType": "full",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 1320,
-        "y": 1200,
         "wires": []
     },
     {
@@ -1446,7 +1446,7 @@
         "type": "function",
         "z": "57aed979d45b94dc",
         "name": "Create start & end datetime",
-        "func": "// Get the current date in Germany timezone\nlet date = new Date();\nlet utcdate_start = new Date(date.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" }));\nutcdate_start.setHours(0, 0, 0, 0);\nlet utcdate_end = new Date(utcdate_start);\n// Add 2 days\nutcdate_end.setDate(utcdate_end.getDate() + 2);\n\nutcdate_start.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" })\nutcdate_end.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" })\n\n// Format it as \"2025-02-02T00:00:00.000Z\"\nutcdate_end = utcdate_end.toISOString();\nutcdate_start = utcdate_start.toISOString();\n\n// Set time to 00:00 in Germany timezone\nlet options = {\n    timeZone: \"Europe/Berlin\",\n    year: \"numeric\",\n    month: \"2-digit\",\n    day: \"2-digit\",\n    hour: \"2-digit\",\n    minute: \"2-digit\",\n    second: \"2-digit\",\n    hourCycle: \"h23\"\n};\n\n// Format the date using Berlin's timezone\nlet germanyDate = new Intl.DateTimeFormat(\"de-DE\", options).formatToParts(date);\n\n// Extract date components\nlet year = germanyDate.find((p) => p.type === \"year\").value;\nlet month = germanyDate.find((p) => p.type === \"month\").value;\nlet day = germanyDate.find((p) => p.type === \"day\").value;\nlet hour = \"00\";\nlet minute = \"00\";\nlet second = \"00\";\n\n// Get the timezone offset dynamically for Berlin\nlet berlinTime = new Date().toLocaleString(\"en-US\", { timeZone: \"Europe/Berlin\", timeZoneName: \"longOffset\" });\n\n// Extract the offset from the formatted string (e.g., \"GMT+01:00\" or \"GMT+02:00\")\nlet offsetMatch = berlinTime.match(/GMT([+-]\\d{2}):(\\d{2})/);\n\nlet sign = \"+\";\nlet offsetHours = \"01\"; // Default to Germany's winter time (UTC+1)\nlet offsetMinutes = \"00\";\n\n// If match is found, extract the correct offset\nif (offsetMatch) {\n    sign = offsetMatch[1][0]; // + or -\n    offsetHours = offsetMatch[1].slice(1).padStart(2, '0'); // 01 or 02\n    offsetMinutes = offsetMatch[2].padStart(2, '0'); // 00\n}\n\n// Construct Berlin time in ISO format\nlet startDate = `${year}-${month}-${day}T${hour}:${minute}:${second}${sign}${offsetHours}:${offsetMinutes}`;\n\n// Calculate end date (48h after start date)\nlet startDateObj = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);\nstartDateObj.setHours(startDateObj.getHours() + 48); // Add 48 hours\n\n// Extract the new end date components\nlet endYear = startDateObj.getFullYear();\nlet endMonth = String(startDateObj.getMonth() + 1).padStart(2, '0'); // Months are 0-based\nlet endDay = String(startDateObj.getDate()).padStart(2, '0');\n\n// Construct end date in ISO format\nlet endDate = `${endYear}-${endMonth}-${endDay}T${hour}:${minute}:${second}${sign}${offsetHours}:${offsetMinutes}`;\n\n// URL encode the datetime strings\nmsg.start_datetime = encodeURIComponent(startDate);\nmsg.end_datetime = encodeURIComponent(endDate);\nmsg.utcdate_start = startDate;\nmsg.utcdate_end = endDate;\n\nreturn msg;\n",
+        "func": "// Get the current date in Germany timezone\nlet date = new Date();\n//let utcdate_start = new Date(date.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" }));\n//utcdate_start.setHours(0, 0, 0, 0);\n//let utcdate_end = new Date(utcdate_start);\n// Add 2 days\n\n// Set time to 00:00 in Germany timezone\nlet options = {\n    timeZone: \"Europe/Berlin\",\n    year: \"numeric\",\n    month: \"2-digit\",\n    day: \"2-digit\",\n    hour: \"2-digit\",\n    minute: \"2-digit\",\n    second: \"2-digit\",\n    hourCycle: \"h23\"\n};\n\n// Format the date using Berlin's timezone\nlet germanyDate = new Intl.DateTimeFormat(\"de-DE\", options).formatToParts(date);\n\n// Extract date components\nlet year = germanyDate.find((p) => p.type === \"year\").value;\nlet month = germanyDate.find((p) => p.type === \"month\").value;\nlet day = germanyDate.find((p) => p.type === \"day\").value;\nlet hour = \"00\";\nlet minute = \"00\";\nlet second = \"00\";\n\n// Get the timezone offset dynamically for Berlin\nlet berlinTime = new Date().toLocaleString(\"en-US\", { timeZone: \"Europe/Berlin\", timeZoneName: \"longOffset\" });\n\n// Extract the offset from the formatted string (e.g., \"GMT+01:00\" or \"GMT+02:00\")\nlet offsetMatch = berlinTime.match(/GMT([+-]\\d{2}):(\\d{2})/);\n\nlet sign = \"+\";\nlet offsetHours = \"01\"; // Default to Germany's winter time (UTC+1)\nlet offsetMinutes = \"00\";\n\n// If match is found, extract the correct offset\nif (offsetMatch) {\n    sign = offsetMatch[1][0]; // + or -\n    offsetHours = offsetMatch[1].slice(1).padStart(2, '0'); // 01 or 02\n    offsetMinutes = offsetMatch[2].padStart(2, '0'); // 00\n}\n\n// Construct Berlin time in ISO format\nlet startDate = `${year}-${month}-${day}T${hour}:${minute}:${second}${sign}${offsetHours}:${offsetMinutes}`;\n\n// Calculate end date (48h after start date)\nlet startDateObj = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);\nstartDateObj.setHours(startDateObj.getHours() + 48); // Add 48 hours\n\n// Extract the new end date components\nlet endYear = startDateObj.getFullYear();\nlet endMonth = String(startDateObj.getMonth() + 1).padStart(2, '0'); // Months are 0-based\nlet endDay = String(startDateObj.getDate()).padStart(2, '0');\n\n// Construct end date in ISO format\nlet endDate = `${endYear}-${endMonth}-${endDay}T${hour}:${minute}:${second}${sign}${offsetHours}:${offsetMinutes}`;\n\n// URL encode the datetime strings\nmsg.start_datetime = encodeURIComponent(startDate);\nmsg.end_datetime = encodeURIComponent(endDate);\n\n\n//msg.utcdate_start = startDate;\n//msg.utcdate_end = endDate;\n\nlet utcdate_start = new Date();\nutcdate_start.setHours(0, 0, 0, 0);\nlet utcdate_end = new Date(utcdate_start);\n// Add 2 days\nutcdate_end.setHours(utcdate_start.getHours() + 48);\n\nutcdate_start.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" })\nutcdate_end.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" })\n\n// Format it as \"2025-02-02T00:00:00.000Z\"\nmsg.utcdate_end = utcdate_end.toISOString();\nmsg.utcdate_start = utcdate_start.toISOString();;\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1454,7 +1454,7 @@
         "finalize": "",
         "libs": [],
         "x": 640,
-        "y": 740,
+        "y": 680,
         "wires": [
             [
                 "5d88ef9680d42093",
@@ -1638,7 +1638,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 2310,
+        "x": 2350,
         "y": 1880,
         "wires": [
             [
@@ -1697,7 +1697,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2350,
+        "x": 2390,
         "y": 1920,
         "wires": []
     },
@@ -1917,7 +1917,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 2510,
+        "x": 2550,
         "y": 1880,
         "wires": [
             [
@@ -1986,7 +1986,7 @@
         "type": "debug",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "debug 7",
+        "name": "EVCC - Telegram - Payload cleanup",
         "active": true,
         "tosidebar": true,
         "console": false,
@@ -1995,7 +1995,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2740,
+        "x": 2830,
         "y": 1740,
         "wires": []
     },
@@ -2004,7 +2004,7 @@
         "type": "debug",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "debug 8",
+        "name": "EVCC - Telegram - Response",
         "active": false,
         "tosidebar": true,
         "console": false,
@@ -2013,7 +2013,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 3400,
+        "x": 3470,
         "y": 1700,
         "wires": []
     },
@@ -2079,7 +2079,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 2090,
+        "x": 2030,
         "y": 1880,
         "wires": [
             [
@@ -2093,7 +2093,7 @@
         "type": "debug",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "debug 10",
+        "name": "EVCC - Different status",
         "active": true,
         "tosidebar": true,
         "console": false,
@@ -2102,7 +2102,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2100,
+        "x": 2090,
         "y": 1920,
         "wires": []
     },
@@ -2305,7 +2305,7 @@
         "type": "debug",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "debug 1",
+        "name": "EVCC Automation Status - Active",
         "active": true,
         "tosidebar": true,
         "console": false,
@@ -2314,7 +2314,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1560,
+        "x": 1680,
         "y": 1840,
         "wires": []
     },
@@ -2323,7 +2323,7 @@
         "type": "debug",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "debug 2",
+        "name": "EVCC Automation Status - Deactive",
         "active": true,
         "tosidebar": true,
         "console": false,
@@ -2332,7 +2332,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1740,
+        "x": 1830,
         "y": 2040,
         "wires": []
     },
@@ -2728,7 +2728,7 @@
         "type": "debug",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "debug 12",
+        "name": "EVCC - Telegram - Token & ChatID",
         "active": true,
         "tosidebar": true,
         "console": false,
@@ -2737,7 +2737,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 3000,
+        "x": 3060,
         "y": 1660,
         "wires": []
     },
@@ -2748,7 +2748,7 @@
         "g": "65c419964f9abf2b",
         "name": "Loadpoints",
         "info": "The nodes expect the dummy node with ID=2",
-        "x": 2300,
+        "x": 2340,
         "y": 1840,
         "wires": []
     },
@@ -2812,24 +2812,21 @@
         "wires": []
     },
     {
-        "id": "b5b3434f5b4fb644",
+        "id": "ce384d3ef86b4175",
         "type": "function",
         "z": "57aed979d45b94dc",
-        "name": "Prepare Payload for PV",
-        "func": "msg.query = `\nfrom(bucket: \"pvforecast\")\n  |> range(start: ${msg.utcdate_start}, stop: ${msg.utcdate_end})\n  |> filter(fn: (r) => r[\"_measurement\"] == \"solcast-HuetteOst\" or r[\"_measurement\"] == \"solcast-SüdWest\")\n  |> filter(fn: (r) => r[\"_field\"] == \"pv_estimate\")\n  |> group(columns: [\"_time\"])  // Ensure grouping only by time\n  |> aggregateWindow(every: 1h, fn: sum, createEmpty: false)  // Sum per hour before grouping\n  |> yield(name: \"sum\")\n`;\n\nreturn msg;\n",
+        "name": "Backup - Create start & end datetime",
+        "func": "// Get the current date in Germany timezone\nlet date = new Date();\nlet utcdate_start = new Date(date.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" }));\nutcdate_start.setHours(0, 0, 0, 0);\nlet utcdate_end = new Date(utcdate_start);\n// Add 2 days\nutcdate_end.setDate(utcdate_end.getDate() + 2);\n\nutcdate_start.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" })\nutcdate_end.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" })\n\n// Format it as \"2025-02-02T00:00:00.000Z\"\nutcdate_end = utcdate_end.toISOString();\nutcdate_start = utcdate_start.toISOString();\n\n// Set time to 00:00 in Germany timezone\nlet options = {\n    timeZone: \"Europe/Berlin\",\n    year: \"numeric\",\n    month: \"2-digit\",\n    day: \"2-digit\",\n    hour: \"2-digit\",\n    minute: \"2-digit\",\n    second: \"2-digit\",\n    hourCycle: \"h23\"\n};\n\n// Format the date using Berlin's timezone\nlet germanyDate = new Intl.DateTimeFormat(\"de-DE\", options).formatToParts(date);\n\n// Extract date components\nlet year = germanyDate.find((p) => p.type === \"year\").value;\nlet month = germanyDate.find((p) => p.type === \"month\").value;\nlet day = germanyDate.find((p) => p.type === \"day\").value;\nlet hour = \"00\";\nlet minute = \"00\";\nlet second = \"00\";\n\n// Get the timezone offset dynamically for Berlin\nlet berlinTime = new Date().toLocaleString(\"en-US\", { timeZone: \"Europe/Berlin\", timeZoneName: \"longOffset\" });\n\n// Extract the offset from the formatted string (e.g., \"GMT+01:00\" or \"GMT+02:00\")\nlet offsetMatch = berlinTime.match(/GMT([+-]\\d{2}):(\\d{2})/);\n\nlet sign = \"+\";\nlet offsetHours = \"01\"; // Default to Germany's winter time (UTC+1)\nlet offsetMinutes = \"00\";\n\n// If match is found, extract the correct offset\nif (offsetMatch) {\n    sign = offsetMatch[1][0]; // + or -\n    offsetHours = offsetMatch[1].slice(1).padStart(2, '0'); // 01 or 02\n    offsetMinutes = offsetMatch[2].padStart(2, '0'); // 00\n}\n\n// Construct Berlin time in ISO format\nlet startDate = `${year}-${month}-${day}T${hour}:${minute}:${second}${sign}${offsetHours}:${offsetMinutes}`;\n\n// Calculate end date (48h after start date)\nlet startDateObj = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);\nstartDateObj.setHours(startDateObj.getHours() + 48); // Add 48 hours\n\n// Extract the new end date components\nlet endYear = startDateObj.getFullYear();\nlet endMonth = String(startDateObj.getMonth() + 1).padStart(2, '0'); // Months are 0-based\nlet endDay = String(startDateObj.getDate()).padStart(2, '0');\n\n// Construct end date in ISO format\nlet endDate = `${endYear}-${endMonth}-${endDay}T${hour}:${minute}:${second}${sign}${offsetHours}:${offsetMinutes}`;\n\n// URL encode the datetime strings\nmsg.start_datetime = encodeURIComponent(startDate);\nmsg.end_datetime = encodeURIComponent(endDate);\n\n\nmsg.utcdate_start = startDate;\nmsg.utcdate_end = endDate;\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1030,
-        "y": 820,
+        "x": 270,
+        "y": 760,
         "wires": [
-            [
-                "b02a6d33f9efea02",
-                "d0a1955a8248868f"
-            ]
+            []
         ]
     }
 ]
