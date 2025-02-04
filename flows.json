@@ -28,7 +28,7 @@
             },
             {
                 "name": "WRITE_LOG",
-                "value": "false",
+                "value": "true",
                 "type": "bool"
             },
             {
@@ -354,7 +354,7 @@
         "type": "function",
         "z": "57aed979d45b94dc",
         "name": "formatSocNow",
-        "func": "let pvData = msg.payload; // Der aktuelle Payload, z.B. [{\"time\":\"2024-09-05T15:28:29.000Z\",\"last\":39}]\n\n// Extrahiere den Wert von \"last\" aus dem Payload\nlet lastValue = pvData[0]._value; // Annahme: Das erste Element des Arrays enthält den gewünschten Wert\n\n// Setze den msg.payload so, dass er nur den Wert \"soc\" enthält\nmsg.payload = lastValue;\nmsg.topic = \"soc\";\nreturn msg;",
+        "func": "let pvData = msg.payload; // Der aktuelle Payload, z.B. [{\"time\":\"2024-09-05T15:28:29.000Z\",\"last\":39}]\n\n// Extrahiere den Wert von \"last\" aus dem Payload\nlet lastValue = pvData[0]._value; // Annahme: Das erste Element des Arrays enthält den gewünschten Wert\n\n// Setze den msg.payload so, dass er nur den Wert \"soc\" enthält\nmsg.payload = Math.round(lastValue);\nmsg.topic = \"soc\";\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -445,7 +445,7 @@
         "type": "function",
         "z": "57aed979d45b94dc",
         "name": "formatSocCarNow",
-        "func": "// Der aktuelle Payload, z.B. [{\"time\":\"2024-09-05T15:28:29.000Z\",\"last\":39}]\nlet pvData = msg.payload;\n\ntry {\n    // Extrahiere den Wert von \"last\" aus dem Payload\n    let lastValue = pvData[0]._value; // Annahme: Das erste Element des Arrays enthält den gewünschten Wert\n\n    // Setze den msg.payload so, dass er nur den Wert \"soc_tesla\" enthält\n    msg.payload = lastValue;\n} catch (error) {\n    // Wenn ein Fehler auftritt, setze den Wert auf 30\n    msg.payload = 30;\n    node.error(\"Error extracting value. Set it to 30 as default: \" + error.message, msg);\n}\n\nmsg.topic = \"soc_tesla\";\nreturn msg;\n",
+        "func": "// Der aktuelle Payload, z.B. [{\"time\":\"2024-09-05T15:28:29.000Z\",\"last\":39}]\nlet pvData = msg.payload;\n\ntry {\n    // Extrahiere den Wert von \"last\" aus dem Payload\n    let lastValue = pvData[0]._value; // Annahme: Das erste Element des Arrays enthält den gewünschten Wert\n\n    // Setze den msg.payload so, dass er nur den Wert \"soc_tesla\" enthält\n    msg.payload = Math.round(lastValue);\n} catch (error) {\n    // Wenn ein Fehler auftritt, setze den Wert auf 30\n    msg.payload = 30;\n    node.error(\"Error extracting value. Set it to 30 as default: \" + error.message, msg);\n}\n\nmsg.topic = \"soc_tesla\";\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1530,7 +1530,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1030,
+        "x": 990,
         "y": 860,
         "wires": [
             [
@@ -2810,5 +2810,26 @@
         "x": 3070,
         "y": 600,
         "wires": []
+    },
+    {
+        "id": "b5b3434f5b4fb644",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "name": "Prepare Payload for PV",
+        "func": "msg.query = `\nfrom(bucket: \"pvforecast\")\n  |> range(start: ${msg.utcdate_start}, stop: ${msg.utcdate_end})\n  |> filter(fn: (r) => r[\"_measurement\"] == \"solcast-HuetteOst\" or r[\"_measurement\"] == \"solcast-SüdWest\")\n  |> filter(fn: (r) => r[\"_field\"] == \"pv_estimate\")\n  |> group(columns: [\"_time\"])  // Ensure grouping only by time\n  |> aggregateWindow(every: 1h, fn: sum, createEmpty: false)  // Sum per hour before grouping\n  |> yield(name: \"sum\")\n`;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1030,
+        "y": 820,
+        "wires": [
+            [
+                "b02a6d33f9efea02",
+                "d0a1955a8248868f"
+            ]
+        ]
     }
 ]
