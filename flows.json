@@ -94,7 +94,11 @@
             "8024bbd8d9d202f9",
             "9164edc6896a640e",
             "c27704ef204d8129",
-            "d24caaa77c666ff3"
+            "d24caaa77c666ff3",
+            "d133b102278bcc53",
+            "298eb4c47b23d4b7",
+            "f00595691a54d57d",
+            "6cd91b57c1ece57f"
         ],
         "x": 14,
         "y": 1539,
@@ -1614,8 +1618,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 1830,
-        "y": 1880,
+        "x": 1930,
+        "y": 1900,
         "wires": [
             [
                 "65bc11651d1037a5",
@@ -1681,8 +1685,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1830,
-        "y": 1920,
+        "x": 1930,
+        "y": 1940,
         "wires": []
     },
     {
@@ -2081,7 +2085,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 2030,
+        "x": 2170,
         "y": 1880,
         "wires": [
             [
@@ -2104,8 +2108,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2090,
-        "y": 1920,
+        "x": 2350,
+        "y": 1960,
         "wires": []
     },
     {
@@ -2294,8 +2298,8 @@
             [
                 "1144697e5437a933",
                 "42700c198935b2ef",
-                "81d066aae4a59b8b",
-                "212172b321930204"
+                "212172b321930204",
+                "d133b102278bcc53"
             ],
             [
                 "93ed04874f5ce16b"
@@ -2316,8 +2320,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1680,
-        "y": 1840,
+        "x": 1480,
+        "y": 1780,
         "wires": []
     },
     {
@@ -2839,6 +2843,143 @@
         "info": "Deactivate Logging and EVCC Integration",
         "x": 410,
         "y": 340,
+        "wires": []
+    },
+    {
+        "id": "d133b102278bcc53",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "property": "payload.evcc.result.gridPower",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "lt",
+                "v": "100",
+                "vt": "str"
+            },
+            {
+                "t": "gte",
+                "v": "100",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 1770,
+        "y": 1880,
+        "wires": [
+            [
+                "298eb4c47b23d4b7"
+            ],
+            [
+                "81d066aae4a59b8b"
+            ]
+        ],
+        "info": "If unexpeced PV power appears  \r\nwe don't want to block the battery.  \r\nWe only block the battery if  \r\nthere is need for this"
+    },
+    {
+        "id": "298eb4c47b23d4b7",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "eos_load_status",
+                "pt": "msg",
+                "to": "pv",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1950,
+        "y": 1860,
+        "wires": [
+            [
+                "86f59b7e173d4e30"
+            ]
+        ]
+    },
+    {
+        "id": "f00595691a54d57d",
+        "type": "inject",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "Inject - Testing Payload",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            },
+            {
+                "p": "limit",
+                "v": "",
+                "vt": "str"
+            },
+            {
+                "p": "grid_charge_text",
+                "v": "Dectivate grid charge",
+                "vt": "str"
+            },
+            {
+                "p": "discharge_allowed_text",
+                "v": "Block discharge",
+                "vt": "str"
+            },
+            {
+                "p": "eos_load_status",
+                "v": "now",
+                "vt": "str"
+            },
+            {
+                "p": "evcc_url",
+                "v": "EVCC_URL",
+                "vt": "env"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "evcc",
+        "payload": "{\"origin\":[{\"result\":\"car_soc\",\"table\":0,\"_field\":\"value\",\"_measurement\":\"vehicleSoc\",\"_start\":\"2025-01-30T15:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-04T19:30:00Z\",\"_value\":67,\"loadpoint\":\"Garage\",\"vehicle\":\"Kia Niro\"},{\"result\":\"home_soc\",\"table\":0,\"_start\":\"2025-02-05T20:57:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:34Z\",\"_value\":5,\"_field\":\"value\",\"_measurement\":\"batterySoc\",\"id\":\"1\"},{\"result\":\"last\",\"table\":0,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":67,\"_field\":\"EAuto_SoC_pro_Stunde\",\"_measurement\":\"EAuto_SoC_pro_Stunde\",\"source\":\"EAuto_SoC_pro_Stunde\"},{\"result\":\"last\",\"table\":1,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":0.00039682675999999997,\"_field\":\"Electricity_price\",\"_measurement\":\"Electricity_price\",\"source\":\"Electricity_price\"},{\"result\":\"last\",\"table\":2,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":1426.9600600411388,\"_field\":\"Last_Wh_pro_Stunde_optimized\",\"_measurement\":\"Last_Wh_pro_Stunde_optimized\",\"source\":\"Last_Wh_pro_Stunde_optimized\"},{\"result\":\"last\",\"table\":3,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":1402782.637709077,\"_field\":\"Last_Wh_pro_Stunde_prognose\",\"_measurement\":\"Last_Wh_pro_Stunde_prognose\",\"source\":\"Last_Wh_pro_Stunde_prognose\"},{\"result\":\"last\",\"table\":4,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":0,\"_field\":\"relative\",\"_measurement\":\"ac_charge\",\"source\":\"ac_charge\"},{\"result\":\"last\",\"table\":5,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":5,\"_field\":\"akku_soc_pro_stunde\",\"_measurement\":\"akku_soc_pro_stunde\",\"source\":\"akku_soc_pro_stunde\"},{\"result\":\"last\",\"table\":6,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":0,\"_field\":\"discharge_allowed\",\"_measurement\":\"discharge_allowed\",\"source\":\"discharge_allowed\"},{\"result\":\"last\",\"table\":7,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":0,\"_field\":\"eautocharge_hours_float\",\"_measurement\":\"eautocharge_hours_float\",\"source\":\"eautocharge_hours_float\"},{\"result\":\"last\",\"table\":8,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":0,\"_field\":\"pv_forecast\",\"_measurement\":\"pv_forecast\",\"source\":\"pv_forecast\"},{\"result\":\"last\",\"table\":9,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":0.38291077999999995,\"_field\":\"strompreis_prognose\",\"_measurement\":\"strompreis_prognose\",\"source\":\"strompreis_prognose\"},{\"result\":\"last\",\"table\":10,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":3.2,\"_field\":\"temperature_forecast\",\"_measurement\":\"temperature_forecast\",\"source\":\"temperature_forecast\"}],\"evcc\":{\"result\":{\"auth\":{},\"availableVersion\":\"0.133.0\",\"battery\":[{\"power\":11,\"soc\":5,\"controllable\":true}],\"batteryCapacity\":1,\"batteryDischargeControl\":true,\"batteryEnergy\":0,\"batteryGridChargeActive\":false,\"batteryGridChargeLimit\":null,\"batteryMode\":\"normal\",\"batteryPower\":11,\"batterySoc\":5,\"bufferSoc\":95,\"bufferStartSoc\":100,\"currency\":\"EUR\",\"fatal\":null,\"greenShareHome\":0.014,\"greenShareLoadpoints\":0,\"gridConfigured\":true,\"gridCurrents\":[0.39,1.24,2.09],\"gridEnergy\":5730.556,\"gridPower\":760,\"gridPowers\":[60,200,490],\"hems\":{},\"homePower\":771,\"influx\":{\"url\":\"http://<<<<ip-replace>>>>:8086\",\"database\":\"evcc\",\"org\":\"<<<<name-replace>>>>\",\"user\":\"\",\"insecure\":false},\"interval\":30,\"loadpoints\":[{\"batteryBoost\":false,\"chargeCurrent\":0,\"chargeCurrents\":[0,0,0],\"chargeDuration\":0,\"chargePower\":0,\"chargeRemainingDuration\":0,\"chargeRemainingEnergy\":0,\"chargeTotalImport\":1745.594,\"chargedEnergy\":0,\"chargerFeatureHeating\":false,\"chargerFeatureIntegratedDevice\":false,\"chargerIcon\":null,\"chargerPhases1p3p\":true,\"chargerPhysicalPhases\":null,\"chargerStatusReason\":\"unknown\",\"charging\":false,\"connected\":false,\"connectedDuration\":42000,\"disableDelay\":180,\"disableThreshold\":0,\"effectiveLimitSoc\":100,\"effectiveMaxCurrent\":16,\"effectiveMinCurrent\":6,\"effectivePlanSoc\":0,\"effectivePlanTime\":null,\"effectivePriority\":0,\"enableDelay\":60,\"enableThreshold\":0,\"enabled\":false,\"limitEnergy\":0,\"limitSoc\":0,\"maxCurrent\":16,\"minCurrent\":6,\"mode\":\"pv\",\"phaseAction\":\"inactive\",\"phaseRemaining\":0,\"phasesActive\":1,\"phasesConfigured\":0,\"phasesEnabled\":1,\"planActive\":false,\"planEnergy\":0,\"planOverrun\":0,\"planProjectedEnd\":null,\"planProjectedStart\":null,\"planTime\":null,\"priority\":0,\"pvAction\":\"inactive\",\"pvRemaining\":0,\"sessionCo2PerKWh\":null,\"sessionEnergy\":0,\"sessionPrice\":null,\"sessionPricePerKWh\":null,\"sessionSolarPercentage\":0,\"smartCostActive\":false,\"smartCostLimit\":null,\"smartCostNextStart\":null,\"title\":\"Garage\",\"vehicleClimaterActive\":null,\"vehicleDetectionActive\":false,\"vehicleLimitSoc\":0,\"vehicleName\":\"Kia_Niro\",\"vehicleOdometer\":9175.3,\"vehicleRange\":0,\"vehicleSoc\":0,\"vehicleWelcomeActive\":false},{\"batteryBoost\":false,\"chargeCurrent\":0,\"chargeDuration\":5119170,\"chargePower\":0,\"chargedEnergy\":0,\"chargerFeatureHeating\":false,\"chargerFeatureIntegratedDevice\":false,\"chargerIcon\":\"\",\"chargerPhases1p3p\":false,\"chargerPhysicalPhases\":null,\"chargerStatusReason\":\"unknown\",\"charging\":true,\"connected\":true,\"connectedDuration\":0,\"disableDelay\":180,\"disableThreshold\":0,\"effectiveLimitSoc\":100,\"effectiveMaxCurrent\":16,\"effectiveMinCurrent\":6,\"effectivePlanSoc\":0,\"effectivePlanTime\":null,\"effectivePriority\":0,\"enableDelay\":60,\"enableThreshold\":0,\"enabled\":false,\"limitEnergy\":0,\"limitSoc\":0,\"maxCurrent\":16,\"minCurrent\":6,\"mode\":\"off\",\"phaseAction\":\"inactive\",\"phaseRemaining\":0,\"phasesActive\":3,\"phasesConfigured\":3,\"phasesEnabled\":3,\"planEnergy\":0,\"planOverrun\":0,\"planProjectedEnd\":null,\"planProjectedStart\":null,\"planTime\":null,\"priority\":0,\"pvAction\":\"inactive\",\"pvRemaining\":0,\"sessionCo2PerKWh\":null,\"sessionEnergy\":0,\"sessionPrice\":null,\"sessionPricePerKWh\":null,\"sessionSolarPercentage\":0,\"smartCostActive\":false,\"smartCostLimit\":null,\"smartCostNextStart\":null,\"title\":\"Bat_Sperre\",\"vehicleDetectionActive\":false,\"vehicleName\":\"\",\"vehicleOdometer\":0,\"vehicleWelcomeActive\":false}],\"mqtt\":{\"broker\":\"\",\"topic\":\"evcc\"},\"network\":{\"schema\":\"http\",\"host\":\"evcc.local\",\"port\":7070},\"prioritySoc\":50,\"pv\":[{\"power\":0,\"energy\":12615.158},{\"power\":0,\"energy\":6246.821}],\"pvEnergy\":18861.979,\"pvPower\":0,\"residualPower\":100,\"siteTitle\":\"Zuhause\",\"smartCostType\":\"priceforecast\",\"sponsor\":{\"name\":\"XHalamaX\",\"expiresAt\":\"2027-09-17T20:00:00Z\"},\"statistics\":{\"30d\":{\"avgCo2\":0,\"avgPrice\":0.1836897663299682,\"chargedKWh\":175.1370000000002,\"solarPercentage\":42.409247105702995},\"365d\":{\"avgCo2\":0,\"avgPrice\":0.17447389259014903,\"chargedKWh\":1406.4620000000007,\"solarPercentage\":31.40448858656161},\"thisYear\":{\"avgCo2\":0,\"avgPrice\":0.18865752247271916,\"chargedKWh\":216.85100000000037,\"solarPercentage\":34.25129840467188},\"total\":{\"avgCo2\":0,\"avgPrice\":0.17447389259014903,\"chargedKWh\":1406.4620000000007,\"solarPercentage\":31.40448858656161}},\"tariffGrid\":0.383,\"tariffPriceHome\":0.377,\"tariffPriceLoadpoints\":0.383,\"vehicles\":{\"Kia_Niro\":{\"title\":\"Kia Niro\",\"icon\":\"car\",\"capacity\":64,\"phases\":3,\"minCurrent\":6,\"maxCurrent\":16}},\"version\":\"0.131.6\"}}}",
+        "payloadType": "json",
+        "x": 1400,
+        "y": 2000,
+        "wires": [
+            [
+                "6cd91b57c1ece57f",
+                "d66f606f09b0f8a6"
+            ]
+        ]
+    },
+    {
+        "id": "6cd91b57c1ece57f",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "EVCC-Testing-Payload",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1410,
+        "y": 2040,
         "wires": []
     }
 ]
