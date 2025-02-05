@@ -328,7 +328,8 @@
         "wires": [
             [
                 "c74ea27f5b853cd7",
-                "e4b7fa2f4b0be015"
+                "e4b7fa2f4b0be015",
+                "d633320e320bf056"
             ]
         ]
     },
@@ -573,7 +574,7 @@
         "type": "function",
         "z": "57aed979d45b94dc",
         "name": "Prepare Payload for InfluxDBv2",
-        "func": "let payload = [];\nlet tempArray = [];\n\n// Get the current time and round down to the nearest hour\nlet baseTime = new Date();\nbaseTime.setMinutes(0, 0, 0); // Set minutes, seconds, and milliseconds to 0\nlet label = \"\";\nif (msg.topic == \"go shorty\") {\n    label = \"ac_charge\";\n    tempArray = msg.payload.ac_charge;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                relative: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"discharge_allowed\";\n    tempArray = msg.payload.discharge_allowed;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                discharge_allowed: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"eautocharge_hours_float\";\n    tempArray = msg.payload.eautocharge_hours_float;\n\n    // If tempArray is null, initialize it as an array of 48 zeros\n    if (tempArray === null) {\n        tempArray = Array(48).fill(0);\n    }\n\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(i);\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                eautocharge_hours_float: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"akku_soc_pro_stunde\";\n    tempArray = msg.payload.result.akku_soc_pro_stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                akku_soc_pro_stunde: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"EAuto_SoC_pro_Stunde\";\n    tempArray = msg.payload.result.EAuto_SoC_pro_Stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                EAuto_SoC_pro_Stunde: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"Last_Wh_pro_Stunde_optimized\";\n    tempArray = msg.payload.result.Last_Wh_pro_Stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                Last_Wh_pro_Stunde_optimized: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"gesamtlast\") {\n    label = \"Last_Wh_pro_Stunde_prognose\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                Last_Wh_pro_Stunde_prognose: tempArray[i] * 1000\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"strompreis\") {\n    label = \"strompreis_prognose\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        //timestamp = timestamp.setHours((i));\n        //timestamp = new Date(timestamp);\n        timestamp.setHours((i));\n        timestamp.setHours(timestamp.getHours() - 1);\n        payload.push({\n            measurement: label,\n            fields: {\n                strompreis_prognose: tempArray[i] * 1000\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\n\n// Set the new payload\nmsg.payload = payload;\nmsg.precision =\"ms\";\nreturn msg;\n",
+        "func": "let payload = [];\nlet tempArray = [];\n\n// Get the current time and round down to the nearest hour\nlet baseTime = new Date();\nbaseTime.setMinutes(0, 0, 0); // Set minutes, seconds, and milliseconds to 0\nlet label = \"\";\nif (msg.topic == \"go shorty\") {\n    label = \"ac_charge\";\n    tempArray = msg.payload.ac_charge;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                relative: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"discharge_allowed\";\n    tempArray = msg.payload.discharge_allowed;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                discharge_allowed: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"eautocharge_hours_float\";\n    tempArray = msg.payload.eautocharge_hours_float;\n\n    // If tempArray is null, initialize it as an array of 48 zeros\n    if (tempArray === null) {\n        tempArray = Array(48).fill(0);\n    }\n\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(i);\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                eautocharge_hours_float: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n\n    label = \"akku_soc_pro_stunde\";\n    tempArray = msg.payload.result.akku_soc_pro_stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                akku_soc_pro_stunde: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"EAuto_SoC_pro_Stunde\";\n    tempArray = msg.payload.result.EAuto_SoC_pro_Stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                EAuto_SoC_pro_Stunde: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"Last_Wh_pro_Stunde_optimized\";\n    tempArray = msg.payload.result.Last_Wh_pro_Stunde;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                Last_Wh_pro_Stunde_optimized: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n\n    label = \"Electricity_price\";\n    tempArray = msg.payload.result.Electricity_price;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours(baseTime.getHours() + (i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                Electricity_price: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"gesamtlast\") {\n    label = \"Last_Wh_pro_Stunde_prognose\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        timestamp.setHours((i));\n        timestamp.setHours(timestamp.getHours() - 1);\n\n        payload.push({\n            measurement: label,\n            fields: {\n                Last_Wh_pro_Stunde_prognose: tempArray[i] * 1000\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"strompreis\") {\n    label = \"strompreis_prognose\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        //timestamp = timestamp.setHours((i));\n        //timestamp = new Date(timestamp);\n        timestamp.setHours((i));\n        timestamp.setHours(timestamp.getHours() - 1);\n        payload.push({\n            measurement: label,\n            fields: {\n                strompreis_prognose: tempArray[i] * 1000\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"temperature_forecast\") {\n    label = \"temperature_forecast\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        //timestamp = timestamp.setHours((i));\n        //timestamp = new Date(timestamp);\n        timestamp.setHours((i));\n        timestamp.setHours(timestamp.getHours() - 1);\n        payload.push({\n            measurement: label,\n            fields: {\n                temperature_forecast: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\nif (msg.topic == \"pv_forecast\") {\n    label = \"pv_forecast\";\n    console.log(msg.payload);\n    tempArray = msg.payload;\n    for (let i = 0; i < tempArray.length; i++) {\n        // Calculate the timestamp for each hour in the past\n        let timestamp = new Date(baseTime);\n        //timestamp = timestamp.setHours((i));\n        //timestamp = new Date(timestamp);\n        timestamp.setHours((i));\n        // as long as the pv data comes from influxDB, we don't substract 1. Otherwise we save the data 2 hours shifted in influx\n        //timestamp.setHours(timestamp.getHours() - 1);\n        timestamp.setHours(timestamp.getHours());\n        payload.push({\n            measurement: label,\n            fields: {\n                pv_forecast: tempArray[i]\n            },\n            tags: {\n                source: label\n            },\n            timestamp: timestamp\n        });\n    }\n}\n\n\n// Set the new payload\nmsg.payload = payload;\nmsg.precision =\"ms\";\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1372,7 +1373,7 @@
         "id": "c8c29f8b8b9bdf8c",
         "type": "function",
         "z": "57aed979d45b94dc",
-        "name": "verify power",
+        "name": "verify temperatur",
         "func": "// Überprüfe, ob die Payload ein Array ist\nif (Array.isArray(msg.payload)) {\n    // Iteriere durch das Array und prüfe, ob jeder Wert eine Zahl ist\n    for (let i = 0; i < msg.payload.length; i++) {\n        if (isNaN(msg.payload[i])) {\n            // Wenn der Wert keine Zahl ist, setze ihn auf 500\n            msg.payload[i] = 500;\n        } else {\n            // Wenn der Wert eine Zahl ist, konvertiere ihn zu einer Zahl (falls nötig)\n            msg.payload[i] = Number(msg.payload[i]);\n        }\n    }\n    \n    // Überprüfe, ob das Array 48 Einträge hat, wenn nicht, fülle es mit 500 auf\n    while (msg.payload.length < 48) {\n        msg.payload.push(500);\n    }\n    \n    // Wenn das Array mehr als 48 Einträge hat, kürze es auf 48\n    if (msg.payload.length > 48) {\n        msg.payload = msg.payload.slice(0, 48);\n    }\n} else {\n    // Wenn msg.payload kein Array ist, erstelle ein Array mit 48 Einträgen, die den Wert 500 haben\n    node.warn(\"Die Payload ist kein Array! Erstelle ein Array mit 48 Einträgen.\");\n    \n    // Array mit 48 Werten, die jeweils 500 sind\n    msg.payload = new Array(48).fill(6);  // Füllt das Array mit 48 Einträgen, die den Wert 500 haben\n}\n\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
@@ -1380,11 +1381,12 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1330,
+        "x": 1350,
         "y": 1380,
         "wires": [
             [
-                "e4b7fa2f4b0be015"
+                "e4b7fa2f4b0be015",
+                "d633320e320bf056"
             ]
         ]
     },
@@ -1561,7 +1563,7 @@
         "type": "function",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "EOS-Logic",
+        "name": "EVCC-Logic",
         "func": "// Get the payload\nlet payload = msg.payload;\n\n// Initialize variables\nlet ac_charge = 0;\nlet home_soc = 0;\nlet akku_soc_pro_stunde = 0;\nlet discharge_allowed = 1;\n\n// Extract values from payload\nfor (let i = 0; i < payload.length; i++) {\n    let item = payload[i];\n    switch(item._measurement) {\n        case \"ac_charge\":\n            ac_charge = item._value;\n            break;\n        case \"batterySoc\":\n            home_soc = item._value;\n            break;\n        case \"akku_soc_pro_stunde\":\n            akku_soc_pro_stunde = item._value;\n            break;\n        case \"discharge_allowed\":\n            discharge_allowed = item._value;\n            break;\n    }\n}\n\n// Implement the logic\nif (ac_charge > 0 && home_soc < akku_soc_pro_stunde) {\n    msg.limit = 99;\n    msg.grid_charge_text = \"Activate grid charge\";\n}\nelse{\n    msg.limit = null;\n    msg.grid_charge_text = \"Dectivate grid charge\";\n}\n\n// Implement the logic\nif (discharge_allowed == 1) {\n    msg.eos_load_status = \"pv\";\n    msg.discharge_allowed_text = \"Allow discharge\";\n}\nelse{\n    msg.eos_load_status = \"now\";\n    msg.discharge_allowed_text = \"Block discharge\";\n}\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
@@ -1626,7 +1628,7 @@
         "type": "http request",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "Block/Unblock battery",
         "method": "POST",
         "ret": "txt",
         "paytoqs": "ignore",
@@ -1638,7 +1640,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 2350,
+        "x": 2380,
         "y": 1880,
         "wires": [
             [
@@ -1730,7 +1732,7 @@
         "type": "http request",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "Set charge limit",
         "method": "POST",
         "ret": "txt",
         "paytoqs": "ignore",
@@ -1742,7 +1744,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 2190,
+        "x": 2200,
         "y": 1740,
         "wires": [
             [
@@ -1798,7 +1800,7 @@
         "type": "http request",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "Remove charge limit",
         "method": "DELETE",
         "ret": "txt",
         "paytoqs": "ignore",
@@ -1810,7 +1812,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 2190,
+        "x": 2220,
         "y": 1640,
         "wires": [
             [
@@ -1917,7 +1919,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 2550,
+        "x": 2570,
         "y": 1880,
         "wires": [
             [
