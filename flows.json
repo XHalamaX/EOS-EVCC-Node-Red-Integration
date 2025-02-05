@@ -28,7 +28,7 @@
             },
             {
                 "name": "WRITE_LOG",
-                "value": "true",
+                "value": "false",
                 "type": "bool"
             },
             {
@@ -280,7 +280,7 @@
         ],
         "repeat": "3600",
         "crontab": "",
-        "once": false,
+        "once": true,
         "onceDelay": "5",
         "topic": "",
         "payload": "true",
@@ -769,7 +769,7 @@
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
         "name": "EOS result from db",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1586,7 +1586,7 @@
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
         "name": "EOS Rule Result",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -1655,7 +1655,7 @@
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
         "name": "Set chat_id & URL",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2051,7 +2051,7 @@
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
         "name": "EVCC Status",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2114,7 +2114,7 @@
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
         "name": "EOS & EVCC joined",
-        "active": false,
+        "active": true,
         "tosidebar": true,
         "console": false,
         "tostatus": false,
@@ -2784,8 +2784,8 @@
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
         "name": "",
-        "property": "payload",
-        "propertyType": "msg",
+        "property": "EVCC_INTEGRATION",
+        "propertyType": "env",
         "rules": [
             {
                 "t": "true"
@@ -2830,5 +2830,15 @@
         "wires": [
             []
         ]
+    },
+    {
+        "id": "0ff41358559b358b",
+        "type": "comment",
+        "z": "57aed979d45b94dc",
+        "name": "BEFORE COMMIT",
+        "info": "Deactivate Logging and EVCC Integration",
+        "x": 410,
+        "y": 340,
+        "wires": []
     }
 ]
