@@ -131,12 +131,16 @@
             "777632b8252c52a8",
             "8af26d7358f3e714",
             "f3e89d79068285ad",
-            "7042387b37ebb8a6"
+            "7042387b37ebb8a6",
+            "ae6ad57e165f3fdb",
+            "685536240ba8b5c1",
+            "7f1648f93a83baf3",
+            "67f90fd450cad568"
         ],
         "x": 2914,
         "y": 559,
         "w": 1172,
-        "h": 262
+        "h": 322
     },
     {
         "id": "c6d7c27cb63b9301",
@@ -590,7 +594,8 @@
         "wires": [
             [
                 "8a4d264f13d8b99d",
-                "5555c5e9ff642de1"
+                "5555c5e9ff642de1",
+                "ae6ad57e165f3fdb"
             ]
         ]
     },
@@ -745,9 +750,6 @@
         "name": "Create plan for EVCC",
         "props": [
             {
-                "p": "payload"
-            },
-            {
                 "p": "topic",
                 "vt": "str"
             }
@@ -757,8 +759,6 @@
         "once": true,
         "onceDelay": 0.1,
         "topic": "",
-        "payload": "",
-        "payloadType": "date",
         "x": 170,
         "y": 1620,
         "wires": [
@@ -2981,5 +2981,94 @@
         "x": 1410,
         "y": 2040,
         "wires": []
+    },
+    {
+        "id": "ae6ad57e165f3fdb",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "go shorty",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 3410,
+        "y": 840,
+        "wires": [
+            [
+                "67f90fd450cad568"
+            ]
+        ]
+    },
+    {
+        "id": "685536240ba8b5c1",
+        "type": "function",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "Prepare error file path",
+        "func": "let date = new Date()\n\n// Set time to 00:00 in Germany timezone\nlet options = {\n    timeZone: \"Europe/Berlin\",\n    year: \"numeric\",\n    month: \"2-digit\",\n    day: \"2-digit\",\n    hour: \"2-digit\",\n    minute: \"2-digit\",\n    second: \"2-digit\",\n    hourCycle: \"h23\"\n};\n\nlet formattedTime = new Intl.DateTimeFormat(\"de-DE\", options).formatToParts(date);\n\nlet year = formattedTime.find((p) => p.type === \"year\").value;\nlet month = formattedTime.find((p) => p.type === \"month\").value;\nlet day = formattedTime.find((p) => p.type === \"day\").value;\nlet hour = formattedTime.find((p) => p.type === \"hour\").value;\nlet minute = formattedTime.find((p) => p.type === \"minute\").value;\nlet second = formattedTime.find((p) => p.type === \"second\").value;\n\nmsg.filename = \"/var/log/eos/influx/\" + year + \"-\" + month + \"-\" + day + \"_\" + hour + \"-\" + minute + \"-\" + second + \".json\";\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 3780,
+        "y": 840,
+        "wires": [
+            [
+                "7f1648f93a83baf3"
+            ]
+        ]
+    },
+    {
+        "id": "7f1648f93a83baf3",
+        "type": "file",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "",
+        "filename": "filename",
+        "filenameType": "msg",
+        "appendNewline": true,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 4000,
+        "y": 840,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "67f90fd450cad568",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "74a1f077fc90d736",
+        "name": "",
+        "property": "WRITE_LOG",
+        "propertyType": "env",
+        "rules": [
+            {
+                "t": "true"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 3570,
+        "y": 840,
+        "wires": [
+            [
+                "685536240ba8b5c1"
+            ]
+        ]
     }
 ]
