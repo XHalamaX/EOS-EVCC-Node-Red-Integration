@@ -98,7 +98,8 @@
             "d133b102278bcc53",
             "298eb4c47b23d4b7",
             "f00595691a54d57d",
-            "6cd91b57c1ece57f"
+            "6cd91b57c1ece57f",
+            "637c28fe78aae29e"
         ],
         "x": 14,
         "y": 1539,
@@ -288,7 +289,7 @@
         ],
         "repeat": "3600",
         "crontab": "",
-        "once": true,
+        "once": false,
         "onceDelay": "5",
         "topic": "",
         "payload": "true",
@@ -2223,7 +2224,7 @@
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
         "name": "",
-        "property": "payload.evcc.result.loadpoints[1].smartCostLimit",
+        "property": "payload.evcc.result.batteryGridChargeLimit",
         "propertyType": "msg",
         "rules": [
             {
@@ -2249,7 +2250,7 @@
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
         "name": "",
-        "property": "payload.evcc.result.loadpoints[1].smartCostLimit",
+        "property": "payload.evcc.result.batteryGridChargeLimit",
         "propertyType": "msg",
         "rules": [
             {
@@ -2265,7 +2266,8 @@
         "y": 1740,
         "wires": [
             [
-                "e6fa97394cc4e234"
+                "e6fa97394cc4e234",
+                "637c28fe78aae29e"
             ]
         ]
     },
@@ -2924,7 +2926,7 @@
             },
             {
                 "p": "limit",
-                "v": "",
+                "v": "99",
                 "vt": "str"
             },
             {
@@ -2939,13 +2941,18 @@
             },
             {
                 "p": "eos_load_status",
-                "v": "now",
+                "v": "pv",
                 "vt": "str"
             },
             {
                 "p": "evcc_url",
                 "v": "EVCC_URL",
                 "vt": "env"
+            },
+            {
+                "p": "payload.evcc.result.loadpoints[1].mode",
+                "v": "pv",
+                "vt": "str"
             }
         ],
         "repeat": "",
@@ -3070,5 +3077,23 @@
                 "685536240ba8b5c1"
             ]
         ]
+    },
+    {
+        "id": "637c28fe78aae29e",
+        "type": "debug",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1940,
+        "y": 1780,
+        "wires": []
     }
 ]
