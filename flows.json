@@ -28,12 +28,12 @@
             },
             {
                 "name": "WRITE_LOG",
-                "value": "false",
+                "value": "true",
                 "type": "bool"
             },
             {
                 "name": "EVCC_INTEGRATION",
-                "value": "false",
+                "value": "true",
                 "type": "bool"
             }
         ]
