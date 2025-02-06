@@ -99,7 +99,12 @@
             "298eb4c47b23d4b7",
             "f00595691a54d57d",
             "6cd91b57c1ece57f",
-            "637c28fe78aae29e"
+            "637c28fe78aae29e",
+            "47cf776dea69f47c",
+            "f62dc8cb231a5c29",
+            "a11acb165e718d5b",
+            "d15e51f4f8c6ab87",
+            "5106c939027a30be"
         ],
         "x": 14,
         "y": 1539,
@@ -1223,7 +1228,7 @@
         "type": "comment",
         "z": "57aed979d45b94dc",
         "name": "Readme",
-        "info": "# How to use this flow\n\n## Install dependencies\n 1. Click on the top right burger bar icon\n 2. Click on manage palette\n 3. Search for node-red-contrib-influxdb\n 4. Install\n\n## Configure InfluxDB settings\n 1. Double click on one influx db node\n 2. Adjust the InfluxDB settings\n\n\n## This Flow is using environment variables.\n- double click on the flow name on the top left\n- click on the \"list\" icon below \"done\" and next to the settings icon\n- change IP and port\n\n## Write to InfluxDB\nThis flow writes data to influx db and expects a eos bucket",
+        "info": "# How to use this flow\nMost up to date information are here\nhttps://github.com/XHalamaX/EOS-EVCC-Node-Red-Integration/tree/main\n\n## Install dependencies\n 1. Click on the top right burger bar icon\n 2. Click on manage palette\n 3. Search for node-red-contrib-influxdb\n 4. Install\n\n## Configure InfluxDB settings\n 1. Double click on one or all influx db node\n 2. Adjust the InfluxDB settings\n\n\n## This Flow is using environment variables.\n- double click on the flow name on the top left\n- click on the \"list\" icon below \"done\" and next to the settings icon\n- adjust the fields\n\n## Write to InfluxDB\nThis flow writes data to influx db and expects a eos bucket",
         "x": 380,
         "y": 400,
         "wires": []
@@ -1234,7 +1239,7 @@
         "z": "57aed979d45b94dc",
         "name": "ToDo List",
         "info": "## PV-Forecast \nReplace PV-Forecast nodes with https://akkudoktor-eos.readthedocs.io/en/latest/akkudoktoreos/prediction.html#pv-power-prediction\nBut waiting for https://github.com/Akkudoktor-EOS/EOS/issues/432\n\n\n## Add error handling\nErrors could be handled much better\n\n## InfluxDB config\n- Use variables in read influx DB nodes (bucket_names)\n- Use variables in write influx DB nodes\n\n## EOS Power Prediction\nCurrently we use load_mean because of https://github.com/Akkudoktor-EOS/EOS/issues/428\n\n\n# DONE\nlogging of request and respone messages can be activated\n",
-        "x": 640,
+        "x": 560,
         "y": 400,
         "wires": []
     },
@@ -1569,7 +1574,7 @@
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
         "name": "EVCC-Logic",
-        "func": "// Get the payload\nlet payload = msg.payload;\n\n// Initialize variables\nlet ac_charge = 0;\nlet home_soc = 0;\nlet akku_soc_pro_stunde = 0;\nlet discharge_allowed = 1;\n\n// Extract values from payload\nfor (let i = 0; i < payload.length; i++) {\n    let item = payload[i];\n    switch(item._measurement) {\n        case \"ac_charge\":\n            ac_charge = item._value;\n            break;\n        case \"batterySoc\":\n            home_soc = item._value;\n            break;\n        case \"akku_soc_pro_stunde\":\n            akku_soc_pro_stunde = item._value;\n            break;\n        case \"discharge_allowed\":\n            discharge_allowed = item._value;\n            break;\n    }\n}\n\n// Implement the logic\nif (ac_charge > 0 && home_soc < akku_soc_pro_stunde) {\n    msg.limit = 99;\n    msg.grid_charge_text = \"Activate grid charge\";\n}\nelse{\n    msg.limit = null;\n    msg.grid_charge_text = \"Dectivate grid charge\";\n}\n\n// Implement the logic\nif (discharge_allowed == 1) {\n    msg.eos_load_status = \"pv\";\n    msg.discharge_allowed_text = \"Allow discharge\";\n}\nelse{\n    msg.eos_load_status = \"now\";\n    msg.discharge_allowed_text = \"Block discharge\";\n}\n\nreturn msg;",
+        "func": "// Get the payload\nlet payload = msg.payload;\n\n// Initialize variables\nlet ac_charge = 0;\nlet home_soc = 0;\nlet akku_soc_pro_stunde = 0;\nlet discharge_allowed = 1;\nlet eautocharge_hours_float = 0;\nlet EAuto_SoC_pro_Stunde = 0;\nlet car_soc = 0;\n\n// Extract values from payload\nfor (let i = 0; i < payload.length; i++) {\n    let item = payload[i];\n    switch(item._measurement) {\n        case \"ac_charge\":\n            ac_charge = item._value;\n            break;\n        case \"batterySoc\":\n            home_soc = item._value;\n            break;\n        case \"akku_soc_pro_stunde\":\n            akku_soc_pro_stunde = item._value;\n            break;\n        case \"discharge_allowed\":\n            discharge_allowed = item._value;\n            break;\n        case \"eautocharge_hours_float\":\n            eautocharge_hours_float = item._value;\n            break;\n        case \"EAuto_SoC_pro_Stunde\":\n            EAuto_SoC_pro_Stunde = item._value;\n            break;\n        case \"car_soc\":\n            car_soc = item._value;\n            break;\n    }\n}\n\n// Implement the logic for ev\nif (eautocharge_hours_float > 0 && car_soc < EAuto_SoC_pro_Stunde) {\n    msg.car_charge_target_mode = \"now\";\n    msg.car_charge_text = \"Activate car grid charge\";\n}\nelse{\n    msg.car_charge_target_mode = \"pv\";\n    msg.car_charge_text = \"Deactivate car grid charge\";\n}\n\n// Implement the logic for home storage (grid charge)\nif (ac_charge > 0 && home_soc < akku_soc_pro_stunde) {\n    msg.limit = 99;\n    msg.grid_charge_text = \"Activate grid charge\";\n}\nelse{\n    msg.limit = null;\n    msg.grid_charge_text = \"Deactivate grid charge\";\n}\n\n// Implement the logic for home storage (battery block)\nif (discharge_allowed == 1) {\n    msg.eos_load_status = \"pv\";\n    msg.discharge_allowed_text = \"Allow discharge\";\n}\nelse{\n    msg.eos_load_status = \"now\";\n    msg.discharge_allowed_text = \"Block discharge\";\n}\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -2301,7 +2306,8 @@
                 "1144697e5437a933",
                 "42700c198935b2ef",
                 "212172b321930204",
-                "d133b102278bcc53"
+                "d133b102278bcc53",
+                "d15e51f4f8c6ab87"
             ],
             [
                 "93ed04874f5ce16b"
@@ -2843,8 +2849,8 @@
         "z": "57aed979d45b94dc",
         "name": "BEFORE COMMIT",
         "info": "Deactivate Logging and EVCC Integration",
-        "x": 410,
-        "y": 340,
+        "x": 750,
+        "y": 400,
         "wires": []
     },
     {
@@ -3095,5 +3101,134 @@
         "x": 1940,
         "y": 1780,
         "wires": []
+    },
+    {
+        "id": "47cf776dea69f47c",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "property": "payload.evcc.result.loadpoints[0].mode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "neq",
+                "v": "car_charge_target_mode",
+                "vt": "msg"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1910,
+        "y": 1580,
+        "wires": [
+            [
+                "5106c939027a30be"
+            ]
+        ]
+    },
+    {
+        "id": "f62dc8cb231a5c29",
+        "type": "http request",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "Change Car Charging Mode",
+        "method": "POST",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "{{{evcc_url}}}/api/loadpoints/1/mode/{{{car_charge_target_mode}}}",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 2280,
+        "y": 1580,
+        "wires": [
+            [
+                "a11acb165e718d5b"
+            ]
+        ]
+    },
+    {
+        "id": "d15e51f4f8c6ab87",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "property": "car_charge_target_mode",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "nnull"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 1770,
+        "y": 1580,
+        "wires": [
+            [
+                "47cf776dea69f47c"
+            ]
+        ]
+    },
+    {
+        "id": "a11acb165e718d5b",
+        "type": "change",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "text",
+                "pt": "msg",
+                "to": "car_charge_text",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 2530,
+        "y": 1580,
+        "wires": [
+            [
+                "8c1d948291a0bc1a"
+            ]
+        ]
+    },
+    {
+        "id": "5106c939027a30be",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "property": "payload.evcc.result.loadpoints[0].smartCostLimit",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "-0.05",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 2050,
+        "y": 1580,
+        "wires": [
+            [
+                "f62dc8cb231a5c29"
+            ]
+        ]
     }
 ]
