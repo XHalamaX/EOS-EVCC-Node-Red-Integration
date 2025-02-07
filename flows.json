@@ -104,7 +104,9 @@
             "f62dc8cb231a5c29",
             "a11acb165e718d5b",
             "d15e51f4f8c6ab87",
-            "5106c939027a30be"
+            "5106c939027a30be",
+            "4137ab2fce7bedcb",
+            "89518ee6bd5ddb5a"
         ],
         "x": 14,
         "y": 1539,
@@ -232,7 +234,7 @@
         "type": "function",
         "z": "57aed979d45b94dc",
         "name": "function rule them all",
-        "func": "context.data = context.data || {};\nswitch (msg.topic) {\n    case \"soc\": \n        context.data.soc = msg.payload;\n        return null;\n    case \"strompreis\":\n        //context.data.strompreis = msg.payload.map(p => p / 100); // Convert to euro/Wh\n        context.data.strompreis = msg.payload;\n        return null;        \n    case \"gesamtlast\":\n        context.data.gesamtlast = msg.payload.map(p => p * 1);; // Example multiplier for conversion\n        return null;               \n    case \"pv_forecast\":\n        //context.data.temperature_forecast = msg.payload.map(t => t + 18); // Example adjustment for temperatures\n        context.data.pv_forecast = msg.payload.map(v => v * 1000); // Convert to Wh\n        return null;                \n    case \"temperature_forecast\":\n        context.data.temperature_forecast = msg.payload;\n        return null; \n    case \"soc_tesla\":\n        context.data.soc_tesla = msg.payload;\n        return null;\n    case \"akku_preis\":\n        context.data.akku_preis = parseFloat(msg.payload);\n        return null;          \n    case \"eauto_soc_ui\":\n        context.data.eauto_soc_ui = parseFloat(msg.payload);\n        return null;        \n    case \"pvpowernow\":\n        context.data.pvpowernow = parseFloat(msg.payload);\n        return null;                \n    case \"solution\":\n        context.data.start_solution = msg.payload.start_solution;\n        return null;           \n    case \"spuel\":\n        context.data.spuel = msg.payload;\n        return null;     \n    case \"spuel_onoff\":\n        context.data.spuel_onoff = msg.payload;\n        return null;                        \n    case \"go shorty\":\n        break;   \n    default:\n        return null; \n}\n\n// Defaults for missing data\nif (context.data.strompreis == null){\n    console.log(\"Missing price data\");\n    return null;\n}\n\nif (context.data.akku_preis == null)\n    context.data.akku_preis = 7.0;\n\nif (context.data.eauto_soc_ui == null)\n    context.data.eauto_soc_ui = 20.0;\n\nif (context.data.pvpowernow == null)\n    context.data.pvpowernow = null;\n\nif (context.data.start_solution == null)\n    context.data.start_solution = null; // Example default solution\n\nif (context.data.soc == null || context.data.soc_tesla == null || context.data.eauto_soc_ui == null) {\n    return msg;\n}\n\nmsg.payload = {\n    ems: {\n        preis_euro_pro_wh_akku: context.data.akku_preis * (0.01 / 100.0),\n        einspeiseverguetung_euro_pro_wh: 7 / (1000.0 * 100.0),\n        gesamtlast: context.data.gesamtlast,\n        pv_prognose_wh: context.data.pv_forecast,\n        strompreis_euro_pro_wh: context.data.strompreis\n    },\n    pv_akku: {\n        capacity_wh: 12000,\n        charging_efficiency: 0.90,\n        discharging_efficiency: 0.95,\n        max_charge_power_w: 5700,\n        initial_soc_percentage: context.data.soc,\n        min_soc_percentage: 5,\n        max_soc_percentage: 100\n    },\n    inverter: {\n        max_power_wh: 15500\n    },\n    eauto: {\n        capacity_wh: 64000,\n        charging_efficiency: 0.88,\n        discharging_efficiency: 0.88,\n        max_charge_power_w: 11040,\n        initial_soc_percentage: context.data.soc_tesla,\n        min_soc_percentage: context.data.eauto_soc_ui,\n        max_soc_percentage: 100\n    },\n    temperature_forecast: context.data.temperature_forecast,\n    start_solution: context.data.start_solution\n};\nreturn msg;\n",
+        "func": "context.data = context.data || {};\nswitch (msg.topic) {\n    case \"soc\": \n        context.data.soc = msg.payload;\n        return null;\n    case \"strompreis\":\n        //context.data.strompreis = msg.payload.map(p => p / 100); // Convert to euro/Wh\n        context.data.strompreis = msg.payload;\n        return null;        \n    case \"gesamtlast\":\n        context.data.gesamtlast = msg.payload.map(p => p * 1);; // Example multiplier for conversion\n        return null;               \n    case \"pv_forecast\":\n        //context.data.temperature_forecast = msg.payload.map(t => t + 18); // Example adjustment for temperatures\n        context.data.pv_forecast = msg.payload.map(v => v * 1000); // Convert to Wh\n        return null;                \n    case \"temperature_forecast\":\n        context.data.temperature_forecast = msg.payload;\n        return null; \n    case \"soc_tesla\":\n        context.data.soc_tesla = msg.payload;\n        return null;\n    case \"akku_preis\":\n        context.data.akku_preis = parseFloat(msg.payload);\n        return null;          \n    case \"eauto_soc_ui\":\n        context.data.eauto_soc_ui = parseFloat(msg.payload);\n        return null;        \n    case \"pvpowernow\":\n        context.data.pvpowernow = parseFloat(msg.payload);\n        return null;                \n    case \"solution\":\n        context.data.start_solution = msg.payload.start_solution;\n        return null;           \n    case \"spuel\":\n        context.data.spuel = msg.payload;\n        return null;     \n    case \"spuel_onoff\":\n        context.data.spuel_onoff = msg.payload;\n        return null;                        \n    case \"go shorty\":\n        break;   \n    default:\n        return null; \n}\n\n// Defaults for missing data\nif (context.data.strompreis == null){\n    console.log(\"Missing price data\");\n    return null;\n}\n\nif (context.data.akku_preis == null)\n    context.data.akku_preis = 7.0;\n\nif (context.data.eauto_soc_ui == null)\n    context.data.eauto_soc_ui = 20.0;\n\nif (context.data.pvpowernow == null)\n    context.data.pvpowernow = null;\n\nif (context.data.start_solution == null)\n    context.data.start_solution = null; // Example default solution\n\nif (context.data.soc == null || context.data.soc_tesla == null || context.data.eauto_soc_ui == null) {\n    return msg;\n}\n\nmsg.payload = {\n    ems: {\n        preis_euro_pro_wh_akku: context.data.akku_preis * (0.01 / 100.0),\n        einspeiseverguetung_euro_pro_wh: 7 / (1000.0 * 100.0),\n        gesamtlast: context.data.gesamtlast,\n        pv_prognose_wh: context.data.pv_forecast,\n        strompreis_euro_pro_wh: context.data.strompreis\n    },\n    pv_akku: {\n        capacity_wh: 12000,\n        charging_efficiency: 0.94,\n        discharging_efficiency: 0.93,\n        max_charge_power_w: 5700,\n        initial_soc_percentage: context.data.soc,\n        min_soc_percentage: 5,\n        max_soc_percentage: 100\n    },\n    inverter: {\n        max_power_wh: 15500\n    },\n    eauto: {\n        capacity_wh: 64000,\n        charging_efficiency: 0.88,\n        discharging_efficiency: 0.88,\n        max_charge_power_w: 11040,\n        initial_soc_percentage: context.data.soc_tesla,\n        min_soc_percentage: context.data.eauto_soc_ui,\n        max_soc_percentage: 100\n    },\n    temperature_forecast: context.data.temperature_forecast,\n    start_solution: context.data.start_solution\n};\nreturn msg;\n",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -292,9 +294,9 @@
                 "p": "payload"
             }
         ],
-        "repeat": "3600",
+        "repeat": "600",
         "crontab": "",
-        "once": false,
+        "once": true,
         "onceDelay": "5",
         "topic": "",
         "payload": "true",
@@ -1574,7 +1576,7 @@
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
         "name": "EVCC-Logic",
-        "func": "// Get the payload\nlet payload = msg.payload;\n\n// Initialize variables\nlet ac_charge = 0;\nlet home_soc = 0;\nlet akku_soc_pro_stunde = 0;\nlet discharge_allowed = 1;\nlet eautocharge_hours_float = 0;\nlet EAuto_SoC_pro_Stunde = 0;\nlet car_soc = 0;\n\n// Extract values from payload\nfor (let i = 0; i < payload.length; i++) {\n    let item = payload[i];\n    switch(item._measurement) {\n        case \"ac_charge\":\n            ac_charge = item._value;\n            break;\n        case \"batterySoc\":\n            home_soc = item._value;\n            break;\n        case \"akku_soc_pro_stunde\":\n            akku_soc_pro_stunde = item._value;\n            break;\n        case \"discharge_allowed\":\n            discharge_allowed = item._value;\n            break;\n        case \"eautocharge_hours_float\":\n            eautocharge_hours_float = item._value;\n            break;\n        case \"EAuto_SoC_pro_Stunde\":\n            EAuto_SoC_pro_Stunde = item._value;\n            break;\n        case \"car_soc\":\n            car_soc = item._value;\n            break;\n    }\n}\n\n// Implement the logic for ev\nif (eautocharge_hours_float > 0 && car_soc < EAuto_SoC_pro_Stunde) {\n    msg.car_charge_target_mode = \"now\";\n    msg.car_charge_text = \"Activate car grid charge\";\n}\nelse{\n    msg.car_charge_target_mode = \"pv\";\n    msg.car_charge_text = \"Deactivate car grid charge\";\n}\n\n// Implement the logic for home storage (grid charge)\nif (ac_charge > 0 && home_soc < akku_soc_pro_stunde) {\n    msg.limit = 99;\n    msg.grid_charge_text = \"Activate grid charge\";\n}\nelse{\n    msg.limit = null;\n    msg.grid_charge_text = \"Deactivate grid charge\";\n}\n\n// Implement the logic for home storage (battery block)\nif (discharge_allowed == 1) {\n    msg.eos_load_status = \"pv\";\n    msg.discharge_allowed_text = \"Allow discharge\";\n}\nelse{\n    msg.eos_load_status = \"now\";\n    msg.discharge_allowed_text = \"Block discharge\";\n}\n\nreturn msg;",
+        "func": "// Get the payload\nlet payload = msg.payload;\n\n// Initialize variables\nlet ac_charge = 0;\nlet home_soc = 0;\nlet akku_soc_pro_stunde = 0;\nlet discharge_allowed = 1;\nlet eautocharge_hours_float = 0;\nlet EAuto_SoC_pro_Stunde = 0;\nlet car_soc = 0;\n\n// Extract values from payload\nfor (let i = 0; i < payload.length; i++) {\n    let item = payload[i];\n    switch(item._measurement) {\n        case \"ac_charge\":\n            ac_charge = item._value;\n            break;\n        case \"batterySoc\":\n            home_soc = item._value;\n            break;\n        case \"akku_soc_pro_stunde\":\n            akku_soc_pro_stunde = item._value;\n            break;\n        case \"discharge_allowed\":\n            discharge_allowed = item._value;\n            break;\n        case \"eautocharge_hours_float\":\n            eautocharge_hours_float = item._value;\n            break;\n        case \"EAuto_SoC_pro_Stunde\":\n            EAuto_SoC_pro_Stunde = item._value;\n            break;\n        case \"car_soc\":\n            car_soc = item._value;\n            break;\n    }\n}\n\n// Implement the logic for ev\nif (eautocharge_hours_float > 0 && car_soc < EAuto_SoC_pro_Stunde) {\n    msg.car_charge_target_mode = \"now\";\n    msg.car_charge_text = \"Activate car grid charge\";\n}\nelse{\n    msg.car_charge_target_mode = \"pv\";\n    msg.car_charge_text = \"Deactivate car grid charge\";\n}\n\n// Implement the logic for home storage (grid charge)\nif (ac_charge > 0 && home_soc < akku_soc_pro_stunde) {\n    msg.limit = 99;\n    msg.grid_charge_text = \"🪫 Activate grid charge 🪫\";\n}\nelse{\n    msg.limit = null;\n    msg.grid_charge_text = \"🔋 Deactivate grid charge 🔋\";\n}\n\n// Implement the logic for home storage (battery block)\nif (discharge_allowed == 1) {\n    msg.eos_load_status = \"pv\";\n    msg.discharge_allowed_text = \"🟩 Allow discharge 🟩\";\n}\nelse{\n    msg.eos_load_status = \"now\";\n    msg.discharge_allowed_text = \"🟥 Block discharge 🟥\";\n}\n\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -1629,7 +1631,7 @@
         "wires": [
             [
                 "65bc11651d1037a5",
-                "86f59b7e173d4e30"
+                "89518ee6bd5ddb5a"
             ]
         ]
     },
@@ -2720,7 +2722,7 @@
             },
             {
                 "p": "payload.text",
-                "v": "Testmessage",
+                "v": "Testmessage 🟩 🟥 ⚡️",
                 "vt": "str"
             }
         ],
@@ -2849,7 +2851,7 @@
         "z": "57aed979d45b94dc",
         "name": "BEFORE COMMIT",
         "info": "Deactivate Logging and EVCC Integration",
-        "x": 750,
+        "x": 740,
         "y": 400,
         "wires": []
     },
@@ -2893,13 +2895,20 @@
         "type": "change",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "Bypass when grid power < 100",
         "rules": [
             {
                 "t": "set",
                 "p": "eos_load_status",
                 "pt": "msg",
                 "to": "pv",
+                "tot": "str"
+            },
+            {
+                "t": "set",
+                "p": "discharge_allowed_text",
+                "pt": "msg",
+                "to": "🟩 Allow discharge 🟩",
                 "tot": "str"
             }
         ],
@@ -2908,8 +2917,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1950,
-        "y": 1860,
+        "x": 1970,
+        "y": 1840,
         "wires": [
             [
                 "86f59b7e173d4e30"
@@ -3228,6 +3237,66 @@
         "wires": [
             [
                 "f62dc8cb231a5c29"
+            ]
+        ]
+    },
+    {
+        "id": "4137ab2fce7bedcb",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "property": "payload.evcc.result.battery[0].soc",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gt",
+                "v": "10",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 2150,
+        "y": 2040,
+        "wires": [
+            [
+                "86f59b7e173d4e30"
+            ]
+        ]
+    },
+    {
+        "id": "89518ee6bd5ddb5a",
+        "type": "switch",
+        "z": "57aed979d45b94dc",
+        "g": "65c419964f9abf2b",
+        "name": "",
+        "property": "eos_load_status",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "pv",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "now",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 2110,
+        "y": 1960,
+        "wires": [
+            [
+                "86f59b7e173d4e30"
+            ],
+            [
+                "4137ab2fce7bedcb"
             ]
         ]
     }
