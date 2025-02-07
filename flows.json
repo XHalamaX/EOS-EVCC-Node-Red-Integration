@@ -110,7 +110,7 @@
         ],
         "x": 14,
         "y": 1539,
-        "w": 3632,
+        "w": 4092,
         "h": 542
     },
     {
@@ -145,10 +145,76 @@
             "7f1648f93a83baf3",
             "67f90fd450cad568"
         ],
-        "x": 2914,
-        "y": 559,
+        "x": 3114,
+        "y": 579,
         "w": 1172,
         "h": 322
+    },
+    {
+        "id": "a958f311acb280b3",
+        "type": "group",
+        "z": "57aed979d45b94dc",
+        "style": {
+            "stroke": "#2e333a",
+            "stroke-opacity": "1",
+            "fill": "#383c45",
+            "fill-opacity": "0.5",
+            "label": true,
+            "label-position": "nw",
+            "color": "#dddddd"
+        },
+        "nodes": [
+            "5d88ef9680d42093",
+            "2",
+            "3",
+            "c74ea27f5b853cd7",
+            "7c16e58d57d088e2",
+            "4b3194b8944cbea2",
+            "4c7d16251cb392f9",
+            "1d23bac51185cf23",
+            "e23883ae77b9da9d",
+            "4c89689f328215f9",
+            "982909bae686458e",
+            "2f7fe4242b61445c",
+            "cfdc12658a116550",
+            "05e62b5400189371",
+            "adbf109d81999ecc",
+            "a8351ac200a9deaa",
+            "4e361d4ec619345e",
+            "a433938a8b56d5ba",
+            "9ad59d0277ea8d49",
+            "3a87f587546d135d",
+            "1ddbed1bd2b221cf",
+            "b956fa4fe3ac2cd2",
+            "742c0cefdcb4fd31",
+            "10c18fe6e30a2f18",
+            "f3a61e9d07624f19",
+            "bb23d5b51d906279",
+            "c362bb15047af916",
+            "5f407533913a270d",
+            "b02a6d33f9efea02",
+            "3047bbcf8e62a313",
+            "4c7b1d3116aff6f7",
+            "278d19dbae951fc8",
+            "323964f13fa2af16",
+            "a210ffdef6f2bc41",
+            "a047bdc2cfc8d52e",
+            "757914590366c534",
+            "9523c491b8336aea",
+            "c0a46c77df270800",
+            "c8c29f8b8b9bdf8c",
+            "d116187b8aaf13a7",
+            "dd7e494b57590c5b",
+            "0dcd1771a41460a2",
+            "705cf3fac8e3b43b",
+            "d0a1955a8248868f",
+            "2c2b85ee014af363",
+            "ce53f61a0ef6d240"
+        ],
+        "x": 474,
+        "y": 519,
+        "w": 2072,
+        "h": 1002
     },
     {
         "id": "c6d7c27cb63b9301",
@@ -169,6 +235,7 @@
         "id": "2",
         "type": "function",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "Transform power from db",
         "func": "// Access the array from msg.payload\nlet dataArray = msg.payload;\n\n// Define the result object\nlet result = {\n    start_datetime: dataArray[0]._time.replace(\"T\", \" \").replace(\"Z\", \"\"), // Take start from the first item\n    interval: \"1 hour\",\n    measurement_load0_mr: [] // Initialize an empty array for values\n};\n\n// Iterate through the data array and extract _value as integers\ndataArray.forEach(item => {\n    if (item._value !== undefined) {\n        result.measurement_load0_mr.push(Math.round(item._value)); // Round the value to nearest integer\n        //result.measurement_load0_mr.push(item._value); // Round the value to nearest integer\n    }\n});\n\n// Assign the result object back to msg.payload\nmsg.payload = result;\n\n// Return the modified message\nreturn msg;\n",
         "outputs": 1,
@@ -177,7 +244,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1310,
+        "x": 1470,
         "y": 1160,
         "wires": [
             [
@@ -190,6 +257,7 @@
         "id": "3",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "power from db - transformed",
         "active": true,
         "tosidebar": true,
@@ -199,7 +267,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1320,
+        "x": 1480,
         "y": 1200,
         "wires": []
     },
@@ -207,7 +275,7 @@
         "id": "0908e1e8147a336e",
         "type": "http request",
         "z": "57aed979d45b94dc",
-        "name": "",
+        "name": "/optimize",
         "method": "POST",
         "ret": "obj",
         "paytoqs": "ignore",
@@ -219,8 +287,8 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 2790,
-        "y": 520,
+        "x": 2980,
+        "y": 540,
         "wires": [
             [
                 "a53e7fcf06c23df8",
@@ -241,8 +309,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2400,
-        "y": 520,
+        "x": 2600,
+        "y": 540,
         "wires": [
             [
                 "fa34e763a4bccacc",
@@ -263,8 +331,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2430,
-        "y": 560,
+        "x": 2630,
+        "y": 580,
         "wires": []
     },
     {
@@ -280,8 +348,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 3020,
-        "y": 520,
+        "x": 3220,
+        "y": 540,
         "wires": []
     },
     {
@@ -314,6 +382,7 @@
         "id": "c74ea27f5b853cd7",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "pv forecast",
         "active": true,
         "tosidebar": true,
@@ -323,7 +392,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1570,
+        "x": 1730,
         "y": 900,
         "wires": []
     },
@@ -331,6 +400,7 @@
         "id": "7c16e58d57d088e2",
         "type": "function",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "filterAndFormatPVForecastFromMidnight",
         "func": "// Hole das aktuelle Datum\nlet now = new Date();\n\n// Erstelle ein neues Array, um die gefilterten Werte zu speichern\nlet filteredData = [];\n\n// Durchlaufe das ursprüngliche Array und filtere nur Werte ab Mitternacht\nmsg.payload.forEach(item => {\n    // Konvertiere den Zeitstempel in ein Datum\n    let itemDate = new Date(item._time);\n\n    // Prüfe, ob der Zeitstempel ab Mitternacht heute liegt\n    //if (itemDate >= new Date(now.getFullYear(), now.getMonth(), now.getDate())) {\n        filteredData.push(item);\n    //}\n});\n\n// Schneide die Werte auf maximal 48 Einträge\nlet limitedData = filteredData.slice(0, 48);\n\n// Extrahiere die \"last\"-Werte, runde auf 2 Nachkommastellen und speichere sie in einem neuen Array\nlet pv_forecast = limitedData.map(item => item._value !== null ? parseFloat(item._value.toFixed(2)) : 0);\n\n// Setze das neue Array als Payload im gewünschten Format\nmsg.payload = pv_forecast;\nmsg.topic = \"pv_forecast\";\nreturn msg;",
         "outputs": 1,
@@ -339,7 +409,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1660,
+        "x": 1820,
         "y": 860,
         "wires": [
             [
@@ -353,6 +423,7 @@
         "id": "4b3194b8944cbea2",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "pv power now",
         "active": true,
         "tosidebar": true,
@@ -362,7 +433,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1580,
+        "x": 1740,
         "y": 1000,
         "wires": []
     },
@@ -370,6 +441,7 @@
         "id": "4c7d16251cb392f9",
         "type": "function",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "formatpvPowerNow",
         "func": "let pvData = msg.payload; // Der aktuelle Payload, wie z.B. [{\"time\":\"1970-01-01T00:00:00.000Z\",\"total_pv\":2.85}]\n\n// Extrahiere den Wert von \"total_pv\" aus dem Payload\nlet totalPv = pvData[0]._value; // Annahme: Das erste Element des Arrays enthält den gewünschten Wert\n\n// Multipliziere den Wert mit 1000 und schneide die Nachkommastellen ab\nlet pvPowerNow = Math.floor(totalPv * 1000);\n\n// Setze den msg.payload so, dass er nur den Wert \"pvpowernow\" enthält\nmsg.payload = pvPowerNow;\nmsg.topic = \"total_pv\";\nreturn msg;",
         "outputs": 1,
@@ -378,7 +450,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1590,
+        "x": 1750,
         "y": 960,
         "wires": [
             [
@@ -391,6 +463,7 @@
         "id": "1d23bac51185cf23",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "home battery soc from db",
         "active": true,
         "tosidebar": true,
@@ -400,7 +473,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1410,
+        "x": 1510,
         "y": 680,
         "wires": []
     },
@@ -408,6 +481,7 @@
         "id": "e23883ae77b9da9d",
         "type": "function",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "formatSocNow",
         "func": "let pvData = msg.payload; // Der aktuelle Payload, z.B. [{\"time\":\"2024-09-05T15:28:29.000Z\",\"last\":39}]\n\n// Extrahiere den Wert von \"last\" aus dem Payload\nlet lastValue = pvData[0]._value; // Annahme: Das erste Element des Arrays enthält den gewünschten Wert\n\n// Setze den msg.payload so, dass er nur den Wert \"soc\" enthält\nmsg.payload = Math.round(lastValue);\nmsg.topic = \"soc\";\nreturn msg;",
         "outputs": 1,
@@ -416,7 +490,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1380,
+        "x": 1480,
         "y": 640,
         "wires": [
             [
@@ -429,6 +503,7 @@
         "id": "4c89689f328215f9",
         "type": "delay",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "",
         "pauseType": "delay",
         "timeout": "5",
@@ -442,7 +517,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 860,
+        "x": 1020,
         "y": 1060,
         "wires": [
             [
@@ -454,6 +529,7 @@
         "id": "982909bae686458e",
         "type": "delay",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "",
         "pauseType": "delay",
         "timeout": "1",
@@ -467,7 +543,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 700,
+        "x": 860,
         "y": 860,
         "wires": [
             [
@@ -482,6 +558,7 @@
         "id": "2f7fe4242b61445c",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "car soc db - formatted",
         "active": true,
         "tosidebar": true,
@@ -491,7 +568,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2160,
+        "x": 2320,
         "y": 1320,
         "wires": []
     },
@@ -499,6 +576,7 @@
         "id": "cfdc12658a116550",
         "type": "function",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "formatSocCarNow",
         "func": "// Der aktuelle Payload, z.B. [{\"time\":\"2024-09-05T15:28:29.000Z\",\"last\":39}]\nlet pvData = msg.payload;\n\ntry {\n    // Extrahiere den Wert von \"last\" aus dem Payload\n    let lastValue = pvData[0]._value; // Annahme: Das erste Element des Arrays enthält den gewünschten Wert\n\n    // Setze den msg.payload so, dass er nur den Wert \"soc_tesla\" enthält\n    msg.payload = Math.round(lastValue);\n} catch (error) {\n    // Wenn ein Fehler auftritt, setze den Wert auf 30\n    msg.payload = 30;\n    node.error(\"Error extracting value. Set it to 30 as default: \" + error.message, msg);\n}\n\nmsg.topic = \"soc_tesla\";\nreturn msg;\n",
         "outputs": 1,
@@ -507,7 +585,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2150,
+        "x": 2310,
         "y": 1280,
         "wires": [
             [
@@ -520,9 +598,10 @@
         "id": "05e62b5400189371",
         "type": "comment",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "HARDCODED - Read car SOC - HARDCODED",
         "info": "",
-        "x": 1670,
+        "x": 1770,
         "y": 1400,
         "wires": [],
         "icon": "node-red/alert.svg"
@@ -555,6 +634,7 @@
         "id": "adbf109d81999ecc",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "car soc - target",
         "active": true,
         "tosidebar": true,
@@ -564,7 +644,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1380,
+        "x": 1480,
         "y": 600,
         "wires": []
     },
@@ -572,6 +652,7 @@
         "id": "a8351ac200a9deaa",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "power from db",
         "active": true,
         "tosidebar": true,
@@ -581,7 +662,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1040,
+        "x": 1200,
         "y": 1200,
         "wires": []
     },
@@ -597,8 +678,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 3010,
-        "y": 1160,
+        "x": 3210,
+        "y": 1180,
         "wires": [
             [
                 "8a4d264f13d8b99d",
@@ -620,14 +701,15 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 3300,
-        "y": 1160,
+        "x": 3500,
+        "y": 1180,
         "wires": []
     },
     {
         "id": "4e361d4ec619345e",
         "type": "function",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "Set target soc (car)",
         "func": "msg.topic = \"eauto_soc_ui\";\nmsg.payload = 60;\nreturn msg;\n",
         "outputs": 1,
@@ -636,7 +718,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1390,
+        "x": 1490,
         "y": 560,
         "wires": [
             [
@@ -649,6 +731,7 @@
         "id": "a433938a8b56d5ba",
         "type": "delay",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "",
         "pauseType": "delay",
         "timeout": "2",
@@ -662,7 +745,7 @@
         "drop": false,
         "allowrate": false,
         "outputs": 1,
-        "x": 860,
+        "x": 1020,
         "y": 1160,
         "wires": [
             [
@@ -674,6 +757,7 @@
         "id": "9ad59d0277ea8d49",
         "type": "delay",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "",
         "pauseType": "delay",
         "timeout": "1",
@@ -700,6 +784,7 @@
         "id": "3a87f587546d135d",
         "type": "function",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "formatSocCarNow",
         "func": "let pvData = msg.payload; // Der aktuelle Payload, z.B. [{\"time\":\"2024-09-05T15:28:29.000Z\",\"last\":39}]\n\n// Extrahiere den Wert von \"last\" aus dem Payload\n//let lastValue = pvData[0].last; // Annahme: Das erste Element des Arrays enthält den gewünschten Wert\nlet lastValue = 10;\n// Setze den msg.payload so, dass er nur den Wert \"soc_tesla\" enthält\nmsg.payload = lastValue;\nmsg.topic = \"soc_tesla\";\nreturn msg;",
         "outputs": 1,
@@ -708,7 +793,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1710,
+        "x": 1810,
         "y": 1440,
         "wires": [
             [
@@ -721,6 +806,7 @@
         "id": "1ddbed1bd2b221cf",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "car soc - db",
         "active": true,
         "tosidebar": true,
@@ -730,7 +816,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 910,
+        "x": 1070,
         "y": 1320,
         "wires": []
     },
@@ -738,6 +824,7 @@
         "id": "2c2b85ee014af363",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "debug 59",
         "active": true,
         "tosidebar": true,
@@ -746,7 +833,7 @@
         "complete": "false",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1700,
+        "x": 1800,
         "y": 1480,
         "wires": []
     },
@@ -805,8 +892,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2610,
-        "y": 520,
+        "x": 2810,
+        "y": 540,
         "wires": [
             [
                 "0908e1e8147a336e",
@@ -829,7 +916,8 @@
         "id": "b956fa4fe3ac2cd2",
         "type": "http request",
         "z": "57aed979d45b94dc",
-        "name": "",
+        "g": "a958f311acb280b3",
+        "name": "/measurement",
         "method": "PUT",
         "ret": "obj",
         "paytoqs": "ignore",
@@ -841,7 +929,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 1610,
+        "x": 1780,
         "y": 1160,
         "wires": [
             [
@@ -854,6 +942,7 @@
         "id": "742c0cefdcb4fd31",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "power measurement",
         "active": true,
         "tosidebar": true,
@@ -863,14 +952,15 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1640,
-        "y": 1220,
+        "x": 1780,
+        "y": 1200,
         "wires": []
     },
     {
         "id": "10c18fe6e30a2f18",
         "type": "http request",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "EOS Power Prediction",
         "method": "GET",
         "ret": "obj",
@@ -883,7 +973,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 1900,
+        "x": 2060,
         "y": 1160,
         "wires": [
             [
@@ -896,6 +986,7 @@
         "id": "f3a61e9d07624f19",
         "type": "change",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "",
         "rules": [
             {
@@ -911,7 +1002,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 2230,
+        "x": 2450,
         "y": 1160,
         "wires": [
             [
@@ -924,6 +1015,7 @@
         "id": "bb23d5b51d906279",
         "type": "http request",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "Read price prediction from EOS",
         "method": "GET",
         "ret": "obj",
@@ -936,7 +1028,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 1310,
+        "x": 1470,
         "y": 1060,
         "wires": [
             [
@@ -949,6 +1041,7 @@
         "id": "c362bb15047af916",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "price prediction from eos",
         "active": true,
         "tosidebar": true,
@@ -958,7 +1051,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1290,
+        "x": 1450,
         "y": 1100,
         "wires": []
     },
@@ -966,6 +1059,7 @@
         "id": "5f407533913a270d",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "power prediction",
         "active": true,
         "tosidebar": true,
@@ -975,8 +1069,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1880,
-        "y": 1220,
+        "x": 2040,
+        "y": 1200,
         "wires": []
     },
     {
@@ -992,14 +1086,15 @@
         "retentionPolicyV18Flux": "",
         "org": "<<<<name-replace>>>>",
         "bucket": "eos",
-        "x": 3260,
-        "y": 1120,
+        "x": 3460,
+        "y": 1140,
         "wires": []
     },
     {
         "id": "b02a6d33f9efea02",
         "type": "influxdb in",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "influxdb": "c6d7c27cb63b9301",
         "name": "Read PV-Forecast from db",
         "query": "",
@@ -1007,7 +1102,7 @@
         "precision": "",
         "retentionPolicy": "",
         "org": "<<<<name-replace>>>>",
-        "x": 1280,
+        "x": 1440,
         "y": 860,
         "wires": [
             [
@@ -1019,6 +1114,7 @@
         "id": "3047bbcf8e62a313",
         "type": "influxdb in",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "influxdb": "c6d7c27cb63b9301",
         "name": "Read total_pv from db",
         "query": "from(bucket: \"evcc\")\n  |> range(start: -10m, stop: 0m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"pvPower\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> filter(fn: (r) => r[\"id\"] == \"1\" or r[\"id\"] == \"2\")\n  |> last()  // Selects the last value directly\n  |> group()\n  |> aggregateWindow(every: 1h, fn: sum, createEmpty: false)\n  |> yield(name: \"last\")",
@@ -1026,7 +1122,7 @@
         "precision": "",
         "retentionPolicy": "",
         "org": "<<<<name-replace>>>>",
-        "x": 1260,
+        "x": 1420,
         "y": 960,
         "wires": [
             [
@@ -1038,6 +1134,7 @@
         "id": "4c7b1d3116aff6f7",
         "type": "influxdb in",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "influxdb": "c6d7c27cb63b9301",
         "name": "Read soc (home) from db",
         "query": "from(bucket: \"evcc\")\n  |> range(start: -10m, stop: 0m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"batterySoc\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> filter(fn: (r) => r[\"id\"] == \"1\")\n  |> last()  // Selects the last value directly\n  |> yield(name: \"mean\")",
@@ -1045,7 +1142,7 @@
         "precision": "",
         "retentionPolicy": "",
         "org": "<<<<name-replace>>>>",
-        "x": 1080,
+        "x": 1180,
         "y": 640,
         "wires": [
             [
@@ -1057,6 +1154,7 @@
         "id": "278d19dbae951fc8",
         "type": "influxdb in",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "influxdb": "c6d7c27cb63b9301",
         "name": "read power from db",
         "query": "from(bucket: \"evcc\")\n  |> range(start: -58h, stop: 0m)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"homePower\")\n  |> filter(fn: (r) => r[\"_field\"] == \"value\")\n  |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
@@ -1064,7 +1162,7 @@
         "precision": "",
         "retentionPolicy": "",
         "org": "<<<<name-replace>>>>",
-        "x": 1050,
+        "x": 1210,
         "y": 1160,
         "wires": [
             [
@@ -1077,6 +1175,7 @@
         "id": "323964f13fa2af16",
         "type": "influxdb in",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "influxdb": "c6d7c27cb63b9301",
         "name": "Read soc (car) from db",
         "query": "import \"math\"\nfrom(bucket: \"evcc\")\n  |> range(start: -150h, stop: 0h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"vehicleSoc\")\n  |> filter(fn: (r) => r[\"_value\"] != 0)  // Filter out values where _value is 0\n  |> aggregateWindow(every: 30m, fn: last, createEmpty: false)\n  |> last()  // Selects the last value directly\n  |> map(fn: (r) => ({ r with _value: math.round(x: r._value) }))  // Round down the _value\n  |> yield(name: \"last\")",
@@ -1084,7 +1183,7 @@
         "precision": "",
         "retentionPolicy": "",
         "org": "<<<<name-replace>>>>",
-        "x": 950,
+        "x": 1110,
         "y": 1280,
         "wires": [
             [
@@ -1249,6 +1348,7 @@
         "id": "a210ffdef6f2bc41",
         "type": "change",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "",
         "rules": [
             {
@@ -1264,7 +1364,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1110,
+        "x": 1210,
         "y": 1380,
         "wires": [
             [
@@ -1277,6 +1377,7 @@
         "id": "a047bdc2cfc8d52e",
         "type": "function",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "verify power",
         "func": "// Überprüfe, ob die Payload ein Array ist\nif (Array.isArray(msg.payload)) {\n    // Iteriere durch das Array und prüfe, ob jeder Wert eine Zahl ist\n    for (let i = 0; i < msg.payload.length; i++) {\n        if (isNaN(msg.payload[i])) {\n            // Wenn der Wert keine Zahl ist, setze ihn auf 500\n            msg.payload[i] = 500;\n        } else {\n            // Wenn der Wert eine Zahl ist, konvertiere ihn zu einer Zahl (falls nötig)\n            msg.payload[i] = Number(msg.payload[i]);\n        }\n    }\n    \n    // Überprüfe, ob das Array 48 Einträge hat, wenn nicht, fülle es mit 500 auf\n    while (msg.payload.length < 48) {\n        msg.payload.push(500);\n    }\n    \n    // Wenn das Array mehr als 48 Einträge hat, kürze es auf 48\n    if (msg.payload.length > 48) {\n        msg.payload = msg.payload.slice(0, 48);\n    }\n} else {\n    // Wenn msg.payload kein Array ist, erstelle ein Array mit 48 Einträgen, die den Wert 500 haben\n    node.warn(\"Die Payload ist kein Array! Erstelle ein Array mit 48 Einträgen.\");\n    \n    // Array mit 48 Werten, die jeweils 500 sind\n    msg.payload = new Array(48).fill(500);  // Füllt das Array mit 48 Einträgen, die den Wert 500 haben\n}\n\nreturn msg;\n",
         "outputs": 1,
@@ -1285,7 +1386,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 2070,
+        "x": 2270,
         "y": 1160,
         "wires": [
             [
@@ -1298,6 +1399,7 @@
         "id": "757914590366c534",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "power prediction - verification",
         "active": true,
         "tosidebar": true,
@@ -1307,8 +1409,8 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2120,
-        "y": 1220,
+        "x": 2320,
+        "y": 1200,
         "wires": []
     },
     {
@@ -1332,8 +1434,8 @@
         "topic": "go shorty",
         "payload": "{\"ems\":{\"preis_euro_pro_wh_akku\":0.0007,\"einspeiseverguetung_euro_pro_wh\":0.00007,\"gesamtlast\":[500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500,500],\"pv_prognose_wh\":[300,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,20,180,960,2230,4019.9999999999995,5050,7570,1160,420,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,410,1160,1610,2050,2029.9999999999998,2160,1840],\"strompreis_euro_pro_wh\":[0.0003784,0.0003868,0.0003899,0.0003725,0.0003653,0.0003247,0.0003158,0.0003069,0.0002886,0.0003163,0.0003111,0.0003049,0.0003019,0.0003059,0.0003154,0.0003228,0.0003802,0.0003815,0.0003672,0.0003369,0.0003181,0.0003131,0.0003137,0.0003162,0.0003342,0.0003698,0.0003899,0.0003905,0.000386,0.0003689,0.0003543,0.0003452,0.0003301,0.0003105,0.0003092,0.00030561,0.00030459,0.00030252,0.00030428,0.00031222,0.00033462,0.00036252,0.00038452,0.00037676,0.00036253,0.00035264,0.00034102,0.00033709]},\"pv_akku\":{\"capacity_wh\":12000,\"charging_efficiency\":0.92,\"discharging_efficiency\":0.92,\"max_charge_power_w\":5700,\"initial_soc_percentage\":66,\"min_soc_percentage\":5,\"max_soc_percentage\":100},\"inverter\":{\"max_power_wh\":15500},\"eauto\":{\"capacity_wh\":64000,\"charging_efficiency\":0.88,\"discharging_efficiency\":0.88,\"max_charge_power_w\":11040,\"initial_soc_percentage\":98,\"min_soc_percentage\":60,\"max_soc_percentage\":100},\"temperature_forecast\":[18.3,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18.02,18.18,18.96,20.23,22.02,23.05,25.57,19.16,18.42,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18.01,18.41,19.16,19.61,20.05,20.03,20.16,19.84],\"start_solution\":null}",
         "payloadType": "json",
-        "x": 2410,
-        "y": 480,
+        "x": 2610,
+        "y": 500,
         "wires": [
             [
                 "175bf928862d4dc3"
@@ -1344,7 +1446,8 @@
         "id": "9523c491b8336aea",
         "type": "http request",
         "z": "57aed979d45b94dc",
-        "name": "",
+        "g": "a958f311acb280b3",
+        "name": "Weather prediction",
         "method": "GET",
         "ret": "obj",
         "paytoqs": "ignore",
@@ -1356,7 +1459,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 910,
+        "x": 1030,
         "y": 1380,
         "wires": [
             [
@@ -1368,6 +1471,7 @@
         "id": "c0a46c77df270800",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "temperatur prediction",
         "active": true,
         "tosidebar": true,
@@ -1377,7 +1481,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1140,
+        "x": 1240,
         "y": 1420,
         "wires": []
     },
@@ -1385,6 +1489,7 @@
         "id": "c8c29f8b8b9bdf8c",
         "type": "function",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "verify temperatur",
         "func": "// Überprüfe, ob die Payload ein Array ist\nif (Array.isArray(msg.payload)) {\n    // Iteriere durch das Array und prüfe, ob jeder Wert eine Zahl ist\n    for (let i = 0; i < msg.payload.length; i++) {\n        if (isNaN(msg.payload[i])) {\n            // Wenn der Wert keine Zahl ist, setze ihn auf 500\n            msg.payload[i] = 500;\n        } else {\n            // Wenn der Wert eine Zahl ist, konvertiere ihn zu einer Zahl (falls nötig)\n            msg.payload[i] = Number(msg.payload[i]);\n        }\n    }\n    \n    // Überprüfe, ob das Array 48 Einträge hat, wenn nicht, fülle es mit 500 auf\n    while (msg.payload.length < 48) {\n        msg.payload.push(500);\n    }\n    \n    // Wenn das Array mehr als 48 Einträge hat, kürze es auf 48\n    if (msg.payload.length > 48) {\n        msg.payload = msg.payload.slice(0, 48);\n    }\n} else {\n    // Wenn msg.payload kein Array ist, erstelle ein Array mit 48 Einträgen, die den Wert 500 haben\n    node.warn(\"Die Payload ist kein Array! Erstelle ein Array mit 48 Einträgen.\");\n    \n    // Array mit 48 Werten, die jeweils 500 sind\n    msg.payload = new Array(48).fill(6);  // Füllt das Array mit 48 Einträgen, die den Wert 500 haben\n}\n\nreturn msg;\n",
         "outputs": 1,
@@ -1393,7 +1498,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1350,
+        "x": 1450,
         "y": 1380,
         "wires": [
             [
@@ -1422,8 +1527,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 2620,
-        "y": 480,
+        "x": 2820,
+        "y": 500,
         "wires": [
             [
                 "0908e1e8147a336e"
@@ -1459,6 +1564,7 @@
         "id": "d116187b8aaf13a7",
         "type": "function",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "Create start & end datetime",
         "func": "// Get the current date in Germany timezone\nlet date = new Date();\n//let utcdate_start = new Date(date.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" }));\n//utcdate_start.setHours(0, 0, 0, 0);\n//let utcdate_end = new Date(utcdate_start);\n// Add 2 days\n\n// Set time to 00:00 in Germany timezone\nlet options = {\n    timeZone: \"Europe/Berlin\",\n    year: \"numeric\",\n    month: \"2-digit\",\n    day: \"2-digit\",\n    hour: \"2-digit\",\n    minute: \"2-digit\",\n    second: \"2-digit\",\n    hourCycle: \"h23\"\n};\n\n// Format the date using Berlin's timezone\nlet germanyDate = new Intl.DateTimeFormat(\"de-DE\", options).formatToParts(date);\n\n// Extract date components\nlet year = germanyDate.find((p) => p.type === \"year\").value;\nlet month = germanyDate.find((p) => p.type === \"month\").value;\nlet day = germanyDate.find((p) => p.type === \"day\").value;\nlet hour = \"00\";\nlet minute = \"00\";\nlet second = \"00\";\n\n// Get the timezone offset dynamically for Berlin\nlet berlinTime = new Date().toLocaleString(\"en-US\", { timeZone: \"Europe/Berlin\", timeZoneName: \"longOffset\" });\n\n// Extract the offset from the formatted string (e.g., \"GMT+01:00\" or \"GMT+02:00\")\nlet offsetMatch = berlinTime.match(/GMT([+-]\\d{2}):(\\d{2})/);\n\nlet sign = \"+\";\nlet offsetHours = \"01\"; // Default to Germany's winter time (UTC+1)\nlet offsetMinutes = \"00\";\n\n// If match is found, extract the correct offset\nif (offsetMatch) {\n    sign = offsetMatch[1][0]; // + or -\n    offsetHours = offsetMatch[1].slice(1).padStart(2, '0'); // 01 or 02\n    offsetMinutes = offsetMatch[2].padStart(2, '0'); // 00\n}\n\n// Construct Berlin time in ISO format\nlet startDate = `${year}-${month}-${day}T${hour}:${minute}:${second}${sign}${offsetHours}:${offsetMinutes}`;\n\n// Calculate end date (48h after start date)\nlet startDateObj = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);\nstartDateObj.setHours(startDateObj.getHours() + 48); // Add 48 hours\n\n// Extract the new end date components\nlet endYear = startDateObj.getFullYear();\nlet endMonth = String(startDateObj.getMonth() + 1).padStart(2, '0'); // Months are 0-based\nlet endDay = String(startDateObj.getDate()).padStart(2, '0');\n\n// Construct end date in ISO format\nlet endDate = `${endYear}-${endMonth}-${endDay}T${hour}:${minute}:${second}${sign}${offsetHours}:${offsetMinutes}`;\n\n// URL encode the datetime strings\nmsg.start_datetime = encodeURIComponent(startDate);\nmsg.end_datetime = encodeURIComponent(endDate);\n\n\n//msg.utcdate_start = startDate;\n//msg.utcdate_end = endDate;\n\nlet utcdate_start = new Date();\nutcdate_start.setHours(0, 0, 0, 0);\nlet utcdate_end = new Date(utcdate_start);\n// Add 2 days\nutcdate_end.setHours(utcdate_start.getHours() + 48);\n\nutcdate_start.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" })\nutcdate_end.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" })\n\n// Format it as \"2025-02-02T00:00:00.000Z\"\nmsg.utcdate_end = utcdate_end.toISOString();\nmsg.utcdate_start = utcdate_start.toISOString();;\n\nreturn msg;\n",
         "outputs": 1,
@@ -1480,6 +1586,7 @@
         "id": "5d88ef9680d42093",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "Start & Endtime",
         "active": true,
         "tosidebar": true,
@@ -1490,13 +1597,14 @@
         "statusVal": "",
         "statusType": "auto",
         "x": 600,
-        "y": 780,
+        "y": 720,
         "wires": []
     },
     {
         "id": "dd7e494b57590c5b",
         "type": "function",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "price adjusted from eos",
         "func": "msg.payload = msg.payload.map(p => p * 1.1894 - 0.00003778);\nmsg.topic = \"strompreis\";\nreturn msg;",
         "outputs": 1,
@@ -1505,7 +1613,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1610,
+        "x": 1770,
         "y": 1060,
         "wires": [
             [
@@ -1519,6 +1627,7 @@
         "id": "0dcd1771a41460a2",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "price adjusted from eos",
         "active": true,
         "tosidebar": true,
@@ -1528,7 +1637,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1610,
+        "x": 1770,
         "y": 1100,
         "wires": []
     },
@@ -1536,6 +1645,7 @@
         "id": "705cf3fac8e3b43b",
         "type": "function",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "Prepare Payload for PV",
         "func": "msg.query = `\nfrom(bucket: \"pvforecast\")\n  |> range(start: ${msg.utcdate_start}, stop: ${msg.utcdate_end})\n  |> filter(fn: (r) => r[\"_measurement\"] == \"solcast-HuetteOst\" or r[\"_measurement\"] == \"solcast-SüdWest\")\n  |> filter(fn: (r) => r[\"_field\"] == \"pv_estimate\")\n  |> group(columns: [\"_time\", \"pv_estimate\"])\n  |> sum()\n  |> group(columns: [\"pv_estimate\"])\n  |> sort(columns: [\"_time\"])\n  |> aggregateWindow(every: 1h, fn: last, createEmpty: false)\n  |> yield(name: \"mean\")\n`;\n\nreturn msg;\n",
         "outputs": 1,
@@ -1544,7 +1654,7 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 990,
+        "x": 1150,
         "y": 860,
         "wires": [
             [
@@ -1557,6 +1667,7 @@
         "id": "d0a1955a8248868f",
         "type": "debug",
         "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
         "name": "Read PV-Forecast from db",
         "active": true,
         "tosidebar": true,
@@ -1566,7 +1677,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1280,
+        "x": 1440,
         "y": 900,
         "wires": []
     },
@@ -1626,7 +1737,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 1930,
+        "x": 2150,
         "y": 1900,
         "wires": [
             [
@@ -1652,7 +1763,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 2380,
+        "x": 2800,
         "y": 1880,
         "wires": [
             [
@@ -1693,7 +1804,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1930,
+        "x": 2150,
         "y": 1940,
         "wires": []
     },
@@ -1711,7 +1822,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2390,
+        "x": 2810,
         "y": 1920,
         "wires": []
     },
@@ -1720,7 +1831,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "Target home limit set?",
         "property": "limit",
         "propertyType": "msg",
         "rules": [
@@ -1731,7 +1842,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 1770,
+        "x": 2040,
         "y": 1740,
         "wires": [
             [
@@ -1756,7 +1867,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 2200,
+        "x": 2540,
         "y": 1740,
         "wires": [
             [
@@ -1779,7 +1890,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2270,
+        "x": 2610,
         "y": 1780,
         "wires": []
     },
@@ -1788,7 +1899,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "Target home limit null?",
         "property": "limit",
         "propertyType": "msg",
         "rules": [
@@ -1799,7 +1910,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 1770,
+        "x": 2040,
         "y": 1680,
         "wires": [
             [
@@ -1824,7 +1935,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 2220,
+        "x": 2560,
         "y": 1640,
         "wires": [
             [
@@ -1847,7 +1958,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2280,
+        "x": 2620,
         "y": 1680,
         "wires": []
     },
@@ -1875,7 +1986,7 @@
                 "valueValue": " application/json"
             }
         ],
-        "x": 3230,
+        "x": 3690,
         "y": 1700,
         "wires": [
             [
@@ -1903,7 +2014,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 2570,
+        "x": 2910,
         "y": 1700,
         "wires": [
             [
@@ -1931,7 +2042,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 2570,
+        "x": 3030,
         "y": 1880,
         "wires": [
             [
@@ -1986,7 +2097,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 2760,
+        "x": 3220,
         "y": 1700,
         "wires": [
             [
@@ -2009,7 +2120,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2830,
+        "x": 3290,
         "y": 1740,
         "wires": []
     },
@@ -2027,7 +2138,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 3470,
+        "x": 3930,
         "y": 1700,
         "wires": []
     },
@@ -2080,7 +2191,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "Change?",
         "property": "payload.evcc.result.loadpoints[1].mode",
         "propertyType": "msg",
         "rules": [
@@ -2093,7 +2204,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 2170,
+        "x": 2600,
         "y": 1880,
         "wires": [
             [
@@ -2116,7 +2227,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 2350,
+        "x": 2810,
         "y": 1960,
         "wires": []
     },
@@ -2230,7 +2341,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "change?",
         "property": "payload.evcc.result.batteryGridChargeLimit",
         "propertyType": "msg",
         "rules": [
@@ -2243,7 +2354,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 1910,
+        "x": 2240,
         "y": 1680,
         "wires": [
             [
@@ -2256,7 +2367,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "change?",
         "property": "payload.evcc.result.batteryGridChargeLimit",
         "propertyType": "msg",
         "rules": [
@@ -2269,7 +2380,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 1910,
+        "x": 2240,
         "y": 1740,
         "wires": [
             [
@@ -2283,7 +2394,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "EVCC automation?",
         "property": "payload.evcc.result.loadpoints[1].mode",
         "propertyType": "msg",
         "rules": [
@@ -2301,7 +2412,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 1590,
+        "x": 1650,
         "y": 1880,
         "wires": [
             [
@@ -2348,7 +2459,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1830,
+        "x": 1950,
         "y": 2040,
         "wires": []
     },
@@ -2377,7 +2488,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1760,
+        "x": 1880,
         "y": 2000,
         "wires": [
             [
@@ -2405,8 +2516,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 3020,
-        "y": 660,
+        "x": 3220,
+        "y": 680,
         "wires": [
             [
                 "41c40ad4fcb02c6f"
@@ -2433,8 +2544,8 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 3020,
-        "y": 700,
+        "x": 3220,
+        "y": 720,
         "wires": [
             [
                 "41c40ad4fcb02c6f"
@@ -2463,8 +2574,8 @@
         "reduceInit": "",
         "reduceInitType": "",
         "reduceFixup": "",
-        "x": 3210,
-        "y": 680,
+        "x": 3410,
+        "y": 700,
         "wires": [
             [
                 "6e540a190f895a7a",
@@ -2486,8 +2597,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 3270,
-        "y": 720,
+        "x": 3470,
+        "y": 740,
         "wires": []
     },
     {
@@ -2502,8 +2613,8 @@
         "createDir": true,
         "overwriteFile": "true",
         "encoding": "none",
-        "x": 4000,
-        "y": 740,
+        "x": 4200,
+        "y": 760,
         "wires": [
             []
         ]
@@ -2521,8 +2632,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 3790,
-        "y": 620,
+        "x": 3990,
+        "y": 640,
         "wires": [
             [
                 "40a9f607cb3e7a13",
@@ -2535,7 +2646,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "74a1f077fc90d736",
-        "name": "",
+        "name": "Success?",
         "property": "payload.eos_response",
         "propertyType": "msg",
         "rules": [
@@ -2553,8 +2664,8 @@
         "checkall": "false",
         "repair": false,
         "outputs": 2,
-        "x": 3550,
-        "y": 680,
+        "x": 3760,
+        "y": 700,
         "wires": [
             [
                 "29d7c9fde0096bea"
@@ -2578,8 +2689,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 3790,
-        "y": 660,
+        "x": 3990,
+        "y": 680,
         "wires": []
     },
     {
@@ -2594,8 +2705,8 @@
         "createDir": true,
         "overwriteFile": "true",
         "encoding": "none",
-        "x": 4000,
-        "y": 620,
+        "x": 4200,
+        "y": 640,
         "wires": [
             []
         ]
@@ -2613,8 +2724,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 3780,
-        "y": 740,
+        "x": 3980,
+        "y": 760,
         "wires": [
             [
                 "8af26d7358f3e714",
@@ -2636,8 +2747,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 3780,
-        "y": 780,
+        "x": 3980,
+        "y": 800,
         "wires": []
     },
     {
@@ -2700,7 +2811,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 3000,
+        "x": 3460,
         "y": 1700,
         "wires": [
             [
@@ -2731,7 +2842,7 @@
         "once": false,
         "onceDelay": 0.1,
         "topic": "",
-        "x": 2750,
+        "x": 3210,
         "y": 1660,
         "wires": [
             [
@@ -2753,7 +2864,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 3060,
+        "x": 3520,
         "y": 1660,
         "wires": []
     },
@@ -2764,7 +2875,7 @@
         "g": "65c419964f9abf2b",
         "name": "Loadpoints",
         "info": "The nodes expect the dummy node with ID=2",
-        "x": 2340,
+        "x": 2760,
         "y": 1840,
         "wires": []
     },
@@ -2773,7 +2884,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "74a1f077fc90d736",
-        "name": "",
+        "name": "Logging activated?",
         "property": "WRITE_LOG",
         "propertyType": "env",
         "rules": [
@@ -2784,8 +2895,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 3390,
-        "y": 680,
+        "x": 3590,
+        "y": 700,
         "wires": [
             [
                 "94c13bbff795a950"
@@ -2797,7 +2908,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "EVCC Interation activated?",
         "property": "EVCC_INTEGRATION",
         "propertyType": "env",
         "rules": [
@@ -2808,7 +2919,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 370,
+        "x": 440,
         "y": 1620,
         "wires": [
             [
@@ -2823,27 +2934,9 @@
         "g": "74a1f077fc90d736",
         "name": "Write Request & Response to file",
         "info": "",
-        "x": 3070,
-        "y": 600,
+        "x": 3270,
+        "y": 620,
         "wires": []
-    },
-    {
-        "id": "ce384d3ef86b4175",
-        "type": "function",
-        "z": "57aed979d45b94dc",
-        "name": "Backup - Create start & end datetime",
-        "func": "// Get the current date in Germany timezone\nlet date = new Date();\nlet utcdate_start = new Date(date.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" }));\nutcdate_start.setHours(0, 0, 0, 0);\nlet utcdate_end = new Date(utcdate_start);\n// Add 2 days\nutcdate_end.setDate(utcdate_end.getDate() + 2);\n\nutcdate_start.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" })\nutcdate_end.toLocaleString(\"de-DE\", { timeZone: \"Europe/Berlin\" })\n\n// Format it as \"2025-02-02T00:00:00.000Z\"\nutcdate_end = utcdate_end.toISOString();\nutcdate_start = utcdate_start.toISOString();\n\n// Set time to 00:00 in Germany timezone\nlet options = {\n    timeZone: \"Europe/Berlin\",\n    year: \"numeric\",\n    month: \"2-digit\",\n    day: \"2-digit\",\n    hour: \"2-digit\",\n    minute: \"2-digit\",\n    second: \"2-digit\",\n    hourCycle: \"h23\"\n};\n\n// Format the date using Berlin's timezone\nlet germanyDate = new Intl.DateTimeFormat(\"de-DE\", options).formatToParts(date);\n\n// Extract date components\nlet year = germanyDate.find((p) => p.type === \"year\").value;\nlet month = germanyDate.find((p) => p.type === \"month\").value;\nlet day = germanyDate.find((p) => p.type === \"day\").value;\nlet hour = \"00\";\nlet minute = \"00\";\nlet second = \"00\";\n\n// Get the timezone offset dynamically for Berlin\nlet berlinTime = new Date().toLocaleString(\"en-US\", { timeZone: \"Europe/Berlin\", timeZoneName: \"longOffset\" });\n\n// Extract the offset from the formatted string (e.g., \"GMT+01:00\" or \"GMT+02:00\")\nlet offsetMatch = berlinTime.match(/GMT([+-]\\d{2}):(\\d{2})/);\n\nlet sign = \"+\";\nlet offsetHours = \"01\"; // Default to Germany's winter time (UTC+1)\nlet offsetMinutes = \"00\";\n\n// If match is found, extract the correct offset\nif (offsetMatch) {\n    sign = offsetMatch[1][0]; // + or -\n    offsetHours = offsetMatch[1].slice(1).padStart(2, '0'); // 01 or 02\n    offsetMinutes = offsetMatch[2].padStart(2, '0'); // 00\n}\n\n// Construct Berlin time in ISO format\nlet startDate = `${year}-${month}-${day}T${hour}:${minute}:${second}${sign}${offsetHours}:${offsetMinutes}`;\n\n// Calculate end date (48h after start date)\nlet startDateObj = new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}`);\nstartDateObj.setHours(startDateObj.getHours() + 48); // Add 48 hours\n\n// Extract the new end date components\nlet endYear = startDateObj.getFullYear();\nlet endMonth = String(startDateObj.getMonth() + 1).padStart(2, '0'); // Months are 0-based\nlet endDay = String(startDateObj.getDate()).padStart(2, '0');\n\n// Construct end date in ISO format\nlet endDate = `${endYear}-${endMonth}-${endDay}T${hour}:${minute}:${second}${sign}${offsetHours}:${offsetMinutes}`;\n\n// URL encode the datetime strings\nmsg.start_datetime = encodeURIComponent(startDate);\nmsg.end_datetime = encodeURIComponent(endDate);\n\n\nmsg.utcdate_start = startDate;\nmsg.utcdate_end = endDate;\n\nreturn msg;\n",
-        "outputs": 1,
-        "timeout": 0,
-        "noerr": 0,
-        "initialize": "",
-        "finalize": "",
-        "libs": [],
-        "x": 270,
-        "y": 760,
-        "wires": [
-            []
-        ]
     },
     {
         "id": "0ff41358559b358b",
@@ -2860,7 +2953,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "Grid power < 100",
         "property": "payload.evcc.result.gridPower",
         "propertyType": "msg",
         "rules": [
@@ -2878,7 +2971,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 1770,
+        "x": 1930,
         "y": 1880,
         "wires": [
             [
@@ -2917,7 +3010,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 1970,
+        "x": 2190,
         "y": 1840,
         "wires": [
             [
@@ -2977,7 +3070,7 @@
         "topic": "evcc",
         "payload": "{\"origin\":[{\"result\":\"car_soc\",\"table\":0,\"_field\":\"value\",\"_measurement\":\"vehicleSoc\",\"_start\":\"2025-01-30T15:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-04T19:30:00Z\",\"_value\":67,\"loadpoint\":\"Garage\",\"vehicle\":\"Kia Niro\"},{\"result\":\"home_soc\",\"table\":0,\"_start\":\"2025-02-05T20:57:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:34Z\",\"_value\":5,\"_field\":\"value\",\"_measurement\":\"batterySoc\",\"id\":\"1\"},{\"result\":\"last\",\"table\":0,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":67,\"_field\":\"EAuto_SoC_pro_Stunde\",\"_measurement\":\"EAuto_SoC_pro_Stunde\",\"source\":\"EAuto_SoC_pro_Stunde\"},{\"result\":\"last\",\"table\":1,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":0.00039682675999999997,\"_field\":\"Electricity_price\",\"_measurement\":\"Electricity_price\",\"source\":\"Electricity_price\"},{\"result\":\"last\",\"table\":2,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":1426.9600600411388,\"_field\":\"Last_Wh_pro_Stunde_optimized\",\"_measurement\":\"Last_Wh_pro_Stunde_optimized\",\"source\":\"Last_Wh_pro_Stunde_optimized\"},{\"result\":\"last\",\"table\":3,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":1402782.637709077,\"_field\":\"Last_Wh_pro_Stunde_prognose\",\"_measurement\":\"Last_Wh_pro_Stunde_prognose\",\"source\":\"Last_Wh_pro_Stunde_prognose\"},{\"result\":\"last\",\"table\":4,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":0,\"_field\":\"relative\",\"_measurement\":\"ac_charge\",\"source\":\"ac_charge\"},{\"result\":\"last\",\"table\":5,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":5,\"_field\":\"akku_soc_pro_stunde\",\"_measurement\":\"akku_soc_pro_stunde\",\"source\":\"akku_soc_pro_stunde\"},{\"result\":\"last\",\"table\":6,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":0,\"_field\":\"discharge_allowed\",\"_measurement\":\"discharge_allowed\",\"source\":\"discharge_allowed\"},{\"result\":\"last\",\"table\":7,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":0,\"_field\":\"eautocharge_hours_float\",\"_measurement\":\"eautocharge_hours_float\",\"source\":\"eautocharge_hours_float\"},{\"result\":\"last\",\"table\":8,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":0,\"_field\":\"pv_forecast\",\"_measurement\":\"pv_forecast\",\"source\":\"pv_forecast\"},{\"result\":\"last\",\"table\":9,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":0.38291077999999995,\"_field\":\"strompreis_prognose\",\"_measurement\":\"strompreis_prognose\",\"source\":\"strompreis_prognose\"},{\"result\":\"last\",\"table\":10,\"_start\":\"2025-02-05T20:07:39.177753336Z\",\"_stop\":\"2025-02-05T21:07:39.177753336Z\",\"_time\":\"2025-02-05T21:07:39.177753336Z\",\"_value\":3.2,\"_field\":\"temperature_forecast\",\"_measurement\":\"temperature_forecast\",\"source\":\"temperature_forecast\"}],\"evcc\":{\"result\":{\"auth\":{},\"availableVersion\":\"0.133.0\",\"battery\":[{\"power\":11,\"soc\":5,\"controllable\":true}],\"batteryCapacity\":1,\"batteryDischargeControl\":true,\"batteryEnergy\":0,\"batteryGridChargeActive\":false,\"batteryGridChargeLimit\":null,\"batteryMode\":\"normal\",\"batteryPower\":11,\"batterySoc\":5,\"bufferSoc\":95,\"bufferStartSoc\":100,\"currency\":\"EUR\",\"fatal\":null,\"greenShareHome\":0.014,\"greenShareLoadpoints\":0,\"gridConfigured\":true,\"gridCurrents\":[0.39,1.24,2.09],\"gridEnergy\":5730.556,\"gridPower\":760,\"gridPowers\":[60,200,490],\"hems\":{},\"homePower\":771,\"influx\":{\"url\":\"http://<<<<ip-replace>>>>:8086\",\"database\":\"evcc\",\"org\":\"<<<<name-replace>>>>\",\"user\":\"\",\"insecure\":false},\"interval\":30,\"loadpoints\":[{\"batteryBoost\":false,\"chargeCurrent\":0,\"chargeCurrents\":[0,0,0],\"chargeDuration\":0,\"chargePower\":0,\"chargeRemainingDuration\":0,\"chargeRemainingEnergy\":0,\"chargeTotalImport\":1745.594,\"chargedEnergy\":0,\"chargerFeatureHeating\":false,\"chargerFeatureIntegratedDevice\":false,\"chargerIcon\":null,\"chargerPhases1p3p\":true,\"chargerPhysicalPhases\":null,\"chargerStatusReason\":\"unknown\",\"charging\":false,\"connected\":false,\"connectedDuration\":42000,\"disableDelay\":180,\"disableThreshold\":0,\"effectiveLimitSoc\":100,\"effectiveMaxCurrent\":16,\"effectiveMinCurrent\":6,\"effectivePlanSoc\":0,\"effectivePlanTime\":null,\"effectivePriority\":0,\"enableDelay\":60,\"enableThreshold\":0,\"enabled\":false,\"limitEnergy\":0,\"limitSoc\":0,\"maxCurrent\":16,\"minCurrent\":6,\"mode\":\"pv\",\"phaseAction\":\"inactive\",\"phaseRemaining\":0,\"phasesActive\":1,\"phasesConfigured\":0,\"phasesEnabled\":1,\"planActive\":false,\"planEnergy\":0,\"planOverrun\":0,\"planProjectedEnd\":null,\"planProjectedStart\":null,\"planTime\":null,\"priority\":0,\"pvAction\":\"inactive\",\"pvRemaining\":0,\"sessionCo2PerKWh\":null,\"sessionEnergy\":0,\"sessionPrice\":null,\"sessionPricePerKWh\":null,\"sessionSolarPercentage\":0,\"smartCostActive\":false,\"smartCostLimit\":null,\"smartCostNextStart\":null,\"title\":\"Garage\",\"vehicleClimaterActive\":null,\"vehicleDetectionActive\":false,\"vehicleLimitSoc\":0,\"vehicleName\":\"Kia_Niro\",\"vehicleOdometer\":9175.3,\"vehicleRange\":0,\"vehicleSoc\":0,\"vehicleWelcomeActive\":false},{\"batteryBoost\":false,\"chargeCurrent\":0,\"chargeDuration\":5119170,\"chargePower\":0,\"chargedEnergy\":0,\"chargerFeatureHeating\":false,\"chargerFeatureIntegratedDevice\":false,\"chargerIcon\":\"\",\"chargerPhases1p3p\":false,\"chargerPhysicalPhases\":null,\"chargerStatusReason\":\"unknown\",\"charging\":true,\"connected\":true,\"connectedDuration\":0,\"disableDelay\":180,\"disableThreshold\":0,\"effectiveLimitSoc\":100,\"effectiveMaxCurrent\":16,\"effectiveMinCurrent\":6,\"effectivePlanSoc\":0,\"effectivePlanTime\":null,\"effectivePriority\":0,\"enableDelay\":60,\"enableThreshold\":0,\"enabled\":false,\"limitEnergy\":0,\"limitSoc\":0,\"maxCurrent\":16,\"minCurrent\":6,\"mode\":\"off\",\"phaseAction\":\"inactive\",\"phaseRemaining\":0,\"phasesActive\":3,\"phasesConfigured\":3,\"phasesEnabled\":3,\"planEnergy\":0,\"planOverrun\":0,\"planProjectedEnd\":null,\"planProjectedStart\":null,\"planTime\":null,\"priority\":0,\"pvAction\":\"inactive\",\"pvRemaining\":0,\"sessionCo2PerKWh\":null,\"sessionEnergy\":0,\"sessionPrice\":null,\"sessionPricePerKWh\":null,\"sessionSolarPercentage\":0,\"smartCostActive\":false,\"smartCostLimit\":null,\"smartCostNextStart\":null,\"title\":\"Bat_Sperre\",\"vehicleDetectionActive\":false,\"vehicleName\":\"\",\"vehicleOdometer\":0,\"vehicleWelcomeActive\":false}],\"mqtt\":{\"broker\":\"\",\"topic\":\"evcc\"},\"network\":{\"schema\":\"http\",\"host\":\"evcc.local\",\"port\":7070},\"prioritySoc\":50,\"pv\":[{\"power\":0,\"energy\":12615.158},{\"power\":0,\"energy\":6246.821}],\"pvEnergy\":18861.979,\"pvPower\":0,\"residualPower\":100,\"siteTitle\":\"Zuhause\",\"smartCostType\":\"priceforecast\",\"sponsor\":{\"name\":\"XHalamaX\",\"expiresAt\":\"2027-09-17T20:00:00Z\"},\"statistics\":{\"30d\":{\"avgCo2\":0,\"avgPrice\":0.1836897663299682,\"chargedKWh\":175.1370000000002,\"solarPercentage\":42.409247105702995},\"365d\":{\"avgCo2\":0,\"avgPrice\":0.17447389259014903,\"chargedKWh\":1406.4620000000007,\"solarPercentage\":31.40448858656161},\"thisYear\":{\"avgCo2\":0,\"avgPrice\":0.18865752247271916,\"chargedKWh\":216.85100000000037,\"solarPercentage\":34.25129840467188},\"total\":{\"avgCo2\":0,\"avgPrice\":0.17447389259014903,\"chargedKWh\":1406.4620000000007,\"solarPercentage\":31.40448858656161}},\"tariffGrid\":0.383,\"tariffPriceHome\":0.377,\"tariffPriceLoadpoints\":0.383,\"vehicles\":{\"Kia_Niro\":{\"title\":\"Kia Niro\",\"icon\":\"car\",\"capacity\":64,\"phases\":3,\"minCurrent\":6,\"maxCurrent\":16}},\"version\":\"0.131.6\"}}}",
         "payloadType": "json",
-        "x": 1400,
+        "x": 1410,
         "y": 2000,
         "wires": [
             [
@@ -3000,7 +3093,7 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1410,
+        "x": 1420,
         "y": 2040,
         "wires": []
     },
@@ -3009,7 +3102,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "74a1f077fc90d736",
-        "name": "",
+        "name": "Result payload?",
         "property": "topic",
         "propertyType": "msg",
         "rules": [
@@ -3022,8 +3115,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 3410,
-        "y": 840,
+        "x": 3480,
+        "y": 860,
         "wires": [
             [
                 "67f90fd450cad568"
@@ -3043,8 +3136,8 @@
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 3780,
-        "y": 840,
+        "x": 3980,
+        "y": 860,
         "wires": [
             [
                 "7f1648f93a83baf3"
@@ -3063,8 +3156,8 @@
         "createDir": true,
         "overwriteFile": "true",
         "encoding": "none",
-        "x": 4000,
-        "y": 840,
+        "x": 4200,
+        "y": 860,
         "wires": [
             []
         ]
@@ -3074,7 +3167,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "74a1f077fc90d736",
-        "name": "",
+        "name": "Logging activated?",
         "property": "WRITE_LOG",
         "propertyType": "env",
         "rules": [
@@ -3085,8 +3178,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 3570,
-        "y": 840,
+        "x": 3750,
+        "y": 860,
         "wires": [
             [
                 "685536240ba8b5c1"
@@ -3107,7 +3200,7 @@
         "targetType": "msg",
         "statusVal": "",
         "statusType": "auto",
-        "x": 1940,
+        "x": 2240,
         "y": 1780,
         "wires": []
     },
@@ -3116,7 +3209,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "change?",
         "property": "payload.evcc.result.loadpoints[0].mode",
         "propertyType": "msg",
         "rules": [
@@ -3129,8 +3222,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 1910,
-        "y": 1580,
+        "x": 2000,
+        "y": 1620,
         "wires": [
             [
                 "5106c939027a30be"
@@ -3154,7 +3247,7 @@
         "authType": "",
         "senderr": false,
         "headers": [],
-        "x": 2280,
+        "x": 2620,
         "y": 1580,
         "wires": [
             [
@@ -3167,7 +3260,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "Car target mode set?",
         "property": "car_charge_target_mode",
         "propertyType": "msg",
         "rules": [
@@ -3178,7 +3271,7 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 1770,
+        "x": 2040,
         "y": 1580,
         "wires": [
             [
@@ -3206,7 +3299,7 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 2530,
+        "x": 2870,
         "y": 1580,
         "wires": [
             [
@@ -3219,7 +3312,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "EVCC Car Automation?",
         "property": "payload.evcc.result.loadpoints[0].smartCostLimit",
         "propertyType": "msg",
         "rules": [
@@ -3232,8 +3325,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 2050,
-        "y": 1580,
+        "x": 2190,
+        "y": 1620,
         "wires": [
             [
                 "f62dc8cb231a5c29"
@@ -3245,7 +3338,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "SOC > 10",
         "property": "payload.evcc.result.battery[0].soc",
         "propertyType": "msg",
         "rules": [
@@ -3258,8 +3351,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 1,
-        "x": 2150,
-        "y": 2040,
+        "x": 2454.9998779296875,
+        "y": 1986,
         "wires": [
             [
                 "86f59b7e173d4e30"
@@ -3271,7 +3364,7 @@
         "type": "switch",
         "z": "57aed979d45b94dc",
         "g": "65c419964f9abf2b",
-        "name": "",
+        "name": "pv?",
         "property": "eos_load_status",
         "propertyType": "msg",
         "rules": [
@@ -3289,8 +3382,8 @@
         "checkall": "true",
         "repair": false,
         "outputs": 2,
-        "x": 2110,
-        "y": 1960,
+        "x": 2310,
+        "y": 1980,
         "wires": [
             [
                 "86f59b7e173d4e30"
@@ -3299,5 +3392,16 @@
                 "4137ab2fce7bedcb"
             ]
         ]
+    },
+    {
+        "id": "ce53f61a0ef6d240",
+        "type": "comment",
+        "z": "57aed979d45b94dc",
+        "g": "a958f311acb280b3",
+        "name": "Payload Preparation",
+        "info": "",
+        "x": 590,
+        "y": 560,
+        "wires": []
     }
 ]
