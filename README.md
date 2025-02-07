@@ -101,7 +101,14 @@ loadpoints:
 5. Copy the **chatID** to the flow environment variables
 
 ---
+## EVCC Integration - IMPORTTANT  
+If everything is up and running you can control via EVCC if EOS should be used.  
+1. Set **Automatik** to off - This will deactivate the automation completly. As soon as you did this the flow will not change any EVCC settings.
+2. Set the smart costs for your loadpoint 0 to -0.05€ to **activate** the loadpoint automation. This makes sure you can use the logic
 
+Both options make sure you can always switch off the automation if you want via EVCC.
+
+---
 ## Writing to InfluxDB
 The flow writes optimization results to an InfluxDB bucket. By default, it expects a bucket named `eos`. Ensure this bucket is created and properly configured before running the flow.
 
